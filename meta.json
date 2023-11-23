@@ -1,0 +1,4 @@
+{
+    "name": "School journal",
+    "description": "Monorepo with Next.js and Express.js, sharing a shadcn/ui library"
+  }
