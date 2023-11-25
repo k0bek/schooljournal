@@ -5,7 +5,9 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write. \"**/*.{ts,tsx,md}\"",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "lint:fix": "turbo lint --fix",
+    "prettier:fix": "turbo prettier --write ."
   },
   "devDependencies": {
     "@commitlint/cli": "^18.4.3",
