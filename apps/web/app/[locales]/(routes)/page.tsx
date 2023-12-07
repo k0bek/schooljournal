@@ -4,9 +4,9 @@ import { useTranslations } from 'next-intl';
 import Lottie from 'lottie-react';
 import animationData from '../../../public/animations/school-animation.json';
 import { Button } from 'ui';
-import { FcGoogle } from 'react-icons/fc';
 import { ModeToggle } from '../../../components/mode-toggle';
-import { Link } from './../../../../../packages/utils/index';
+import { Link } from '../../../../../packages/utils/index';
+import { OAuth } from '../../../components/OAuth';
 
 export default function HomePage() {
 	const t = useTranslations('Index');
@@ -24,10 +24,7 @@ export default function HomePage() {
 						{t('Join today')}
 					</p>
 					<div className="flex flex-col gap-2">
-						<Button className="w-full gap-2 rounded-full py-6 text-lg" variant="outline">
-							<FcGoogle className="text-2xl" />
-							{t('Sign up with Google')}
-						</Button>
+						<OAuth />
 						<div className="flex items-center justify-center gap-2">
 							<hr className="h-[2px] w-full bg-violet-600" />
 							<span>{t('or')}</span>
