@@ -9,6 +9,7 @@ import helmet from 'helmet';
 import { RateLimitRequestHandler, rateLimit } from 'express-rate-limit';
 import cookieParser from 'cookie-parser';
 import { connectDB } from './db/connectToDatabase';
+import authRouter from './routes/authRoutes';
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use(helmet());
 app.use(limiter);
 
 app.set('trust proxy', 1);
+app.use('/api/v1/auth', authRouter);
 
 const port: string | 5001 = process.env['PORT'] || 5001;
 

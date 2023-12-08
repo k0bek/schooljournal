@@ -1,8 +1,18 @@
 {
-    "scripts": {
-      "db:generate": "prisma generate",
-      "db:push": "prisma db push --skip-generate"
+    "name": "database",
+    "version": "0.0.0",
+    "dependencies": {
+        "@prisma/client": "^5.4.0",
+        "bcryptjs": "^2.4.3"
+    },
+    "devDependencies": {
+        "@types/bcryptjs": "^2.4.6",
+        "prisma": "5.4.0"
     },
     "main": "./index.ts",
-    "types": "./index.ts"
+    "types": "./index.ts",
+    "scripts": {
+        "db:generate": "prisma generate",
+        "db:push": "prisma db push --skip-generate"
+    }
 }
