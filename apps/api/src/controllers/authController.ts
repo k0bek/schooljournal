@@ -1,6 +1,5 @@
 import { db } from './../../../../packages/database/db';
 import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
 import bcryptjs from 'bcryptjs';
 import { StatusCodes } from 'http-status-codes';
 import { User } from '@prisma/client';
@@ -13,11 +12,11 @@ export const google = async (req: Request, res: Response) => {
 	const { id, email, imageUrl } = user;
 	try {
 		const user = await db.user.findUnique({ where: { email } });
+		let refreshToken = '';
 
 		if (user) {
 			const payload = { user };
 			const token = createJWT({ payload });
-			let refreshToken = '';
 			const existingToken = await db.token.findFirst({
 				where: {
 					userId: id,
@@ -59,8 +58,9 @@ export const google = async (req: Request, res: Response) => {
 					imageUrl,
 				},
 			});
-			const token: string = jwt.sign({ id }, process.env.JWT_SECRET as string);
-			res.cookie('access_token', token, { httpOnly: true }).status(StatusCodes.OK).json(user);
+			const token = createJWT({ payload: { user } });
+			attachCookiesToResponse({ res, user, refreshToken });
+			res.status(StatusCodes.OK).json({ user: token });
 		}
 	} catch (error) {
 		console.log(error);
