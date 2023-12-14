@@ -9,7 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.3.1",
+    "@reduxjs/toolkit": "^2.0.1",
     "axios": "^1.6.2",
+    "database": "*",
     "firebase": "^10.7.0",
     "lottie-react": "^2.4.0",
     "lucide-react": "^0.293.0",
@@ -19,11 +22,13 @@
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.49.0",
     "react-icons": "^4.12.0",
     "react-query": "^3.39.3",
+    "react-redux": "^9.0.3",
     "tailwind-merge": "^2.0.0",
     "ui": "*",
-    "database": "*"
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "@types/node": "^17.0.12",
