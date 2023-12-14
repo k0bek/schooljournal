@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
-require('express-async-errors');
 import express from 'express';
+import 'express-async-errors';
 import { urlencoded } from 'body-parser';
 import morgan from 'morgan';
 import cors from 'cors';
@@ -10,6 +10,7 @@ import { RateLimitRequestHandler, rateLimit } from 'express-rate-limit';
 import cookieParser from 'cookie-parser';
 import { connectDB } from './db/connectToDatabase';
 import authRouter from './routes/authRoutes';
+import errorHandlerMiddleware from './middleware/errorHandlerMiddleware';
 
 const app = express();
 
@@ -28,9 +29,10 @@ app.use(morgan('tiny'));
 app.use(cors());
 app.use(helmet());
 app.use(limiter);
-
 app.set('trust proxy', 1);
 app.use('/api/v1/auth', authRouter);
+
+app.use(errorHandlerMiddleware);
 
 const port: string | 5001 = process.env['PORT'] || 5001;
 

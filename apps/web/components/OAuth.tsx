@@ -22,8 +22,8 @@ export const OAuth = () => {
 		const provider = new GoogleAuthProvider();
 		const auth = getAuth(app);
 		const result = await signInWithPopup(auth, provider);
-		const { uid, email, photoURL: imageUrl } = result.user;
-		mutate({ id: uid, email, imageUrl });
+		const { uid, email, photoURL: imageUrl, displayName } = result.user;
+		mutate({ id: uid, email, imageUrl, username: displayName });
 	};
 
 	return (
