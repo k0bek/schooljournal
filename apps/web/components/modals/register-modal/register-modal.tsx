@@ -55,6 +55,10 @@ export const RegisterModal = () => {
 		mutationKey: ['register'],
 		onSuccess: () => {
 			queryClient.invalidateQueries('register');
+			dispatch(onClose());
+			form.reset();
+			router.push('/home');
+			setFormError({ response: { data: { msg: '' } } });
 		},
 		onError: (data: ErrorType) => {
 			setFormError(data);
@@ -80,9 +84,7 @@ export const RegisterModal = () => {
 	}) => {
 		try {
 			mutate({ username, email, password });
-			form.reset();
 			router.refresh();
-			onClose();
 		} catch (error) {
 			console.log(error);
 		}

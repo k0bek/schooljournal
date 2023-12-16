@@ -132,7 +132,7 @@ export const login = async (req: Request, res: Response) => {
 		throw new UnauthenticatedError('There is no user with this email.');
 	}
 
-	const isPasswordCorrect = await bcryptjs.compareSync(password, user.password);
+	const isPasswordCorrect = bcryptjs.compareSync(password, user.password);
 
 	if (!isPasswordCorrect) {
 		throw new UnauthenticatedError('Invalid password');
