@@ -13,7 +13,6 @@ import { RootState } from '../../../redux/store';
 
 export default function HomePage() {
 	const t = useTranslations('Index');
-	const { isOpen, type } = useSelector((state: RootState) => state.modal);
 	const dispatch = useDispatch();
 
 	return (

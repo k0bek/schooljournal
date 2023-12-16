@@ -14,12 +14,12 @@ export default async function LocaleLayout({ children, params: { locales } }) {
 	}
 
 	return (
-		<NextIntlClientProvider messages={messages}>
-			<html lang={locales} className={cn(inter.variable, satoshi.variable)}>
-				<body className="overflow-auto">
+		<html lang={locales} className={cn(inter.variable, satoshi.variable)}>
+			<body className="overflow-auto">
+				<NextIntlClientProvider messages={messages}>
 					<Providers>{children}</Providers>
-				</body>
-			</html>
-		</NextIntlClientProvider>
+				</NextIntlClientProvider>
+			</body>
+		</html>
 	);
 }

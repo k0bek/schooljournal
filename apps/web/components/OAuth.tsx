@@ -7,14 +7,17 @@ import { useMutation, useQueryClient } from 'react-query';
 import axios from 'axios';
 import { postGoogleAuth } from '../api/actions/auth/auth.queries';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export const OAuth = () => {
 	const t = useTranslations('Index');
 	const queryClient = useQueryClient();
+	const router = useRouter();
 
 	const { status, error, mutate } = useMutation(postGoogleAuth, {
 		onSuccess: () => {
 			queryClient.invalidateQueries('google');
+			router.push('/home');
 		},
 	});
 

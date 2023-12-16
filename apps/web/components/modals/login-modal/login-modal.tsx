@@ -54,6 +54,10 @@ export const LoginModal = () => {
 		mutationKey: ['login'],
 		onSuccess: () => {
 			queryClient.invalidateQueries('login');
+			form.reset();
+			dispatch(onClose());
+			router.push('/home');
+			setFormError({ response: { data: { msg: '' } } });
 		},
 		onError: (data: ErrorType) => {
 			setFormError(data);
@@ -71,9 +75,7 @@ export const LoginModal = () => {
 	const onSubmit = ({ email, password }: { email: string; password: string }) => {
 		try {
 			mutate({ email, password });
-			form.reset();
 			router.refresh();
-			onClose();
 		} catch (error) {
 			console.log(error);
 		}
@@ -139,7 +141,7 @@ export const LoginModal = () => {
 							)}
 						</div>
 						<DialogFooter className="bg-gray-100 px-6 py-4 dark:bg-slate-800">
-							<Button variant="default" disabled={isLoading}>
+							<Button variant="default" disabled={isLoading} className="disabled:bg-violet-400">
 								Log in
 							</Button>
 						</DialogFooter>
