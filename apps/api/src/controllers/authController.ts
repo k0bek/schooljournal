@@ -46,6 +46,7 @@ export const google = async (req: Request, res: Response) => {
 			}
 		} else {
 			refreshToken = crypto.randomBytes(40).toString('hex');
+			refreshToken = crypto.randomBytes(40).toString('hex');
 			const generatedPassword =
 				Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
 			const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
