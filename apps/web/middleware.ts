@@ -1,14 +1,16 @@
-import createMiddleware from 'next-intl/middleware';
+import { NextRequest, NextResponse } from 'next/server';
 
-export default createMiddleware({
-	// A list of all locales that are supported
-	locales: ['en', 'pl'],
+export const protectedRoutes = ['/home'];
+export const authRoutes = ['/'];
 
-	// Used when no locale matches
-	defaultLocale: 'en',
-});
+export function middleware(request: NextRequest) {
+	const currentUser = request.cookies.get('accessToken')?.value;
 
-export const config = {
-	// Match only internationalized pathnames
-	matcher: ['/((?!api|_next|_vercel|.*\\..*).*)'],
-};
+	if (protectedRoutes.includes(request.nextUrl.pathname) && !currentUser) {
+		return NextResponse.redirect(new URL('/', request.url));
+	}
+
+	if (authRoutes.includes(request.nextUrl.pathname) && currentUser) {
+		return NextResponse.redirect(new URL('/home', request.url));
+	}
+}

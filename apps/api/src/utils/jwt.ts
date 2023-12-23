@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { GetPublicKeyOrSecret, Secret } from 'jsonwebtoken';
 import { User } from '@prisma/client';
 
 export const createJWT = ({ payload }: { payload: { user: User; refreshToken?: string } }) => {
@@ -7,7 +7,8 @@ export const createJWT = ({ payload }: { payload: { user: User; refreshToken?: s
 	return token;
 };
 
-export const isTokenValid = (token: any) => jwt.verify(token, process.env.JWT_SECRET as string);
+export const isTokenValid = (token: string) =>
+	jwt.verify(token, process.env['JWT_SECRET'] as Secret | GetPublicKeyOrSecret);
 
 export const attachCookiesToResponse = ({
 	res,
