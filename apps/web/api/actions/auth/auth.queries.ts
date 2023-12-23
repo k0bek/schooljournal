@@ -13,13 +13,15 @@ export const postRegister = async ({
 	username,
 	email,
 	password,
+	type,
 }: {
 	username: string;
 	email: string;
 	password: string;
+	type: string;
 }) => {
 	try {
-		await axios.post('/api/v1/auth/register', { username, email, password });
+		return await axios.post('/api/v1/auth/register', { username, email, password, type });
 	} catch (error) {
 		throw error;
 	}
@@ -27,7 +29,7 @@ export const postRegister = async ({
 
 export const postLogin = async ({ email, password }: { email: string; password: string }) => {
 	try {
-		await axios.post('/api/v1/auth/login', { email, password });
+		return await axios.post('/api/v1/auth/login', { email, password });
 	} catch (error) {
 		throw error;
 	}

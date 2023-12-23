@@ -10,7 +10,9 @@ import { RateLimitRequestHandler, rateLimit } from 'express-rate-limit';
 import cookieParser from 'cookie-parser';
 import { connectDB } from './db/connectToDatabase';
 import authRouter from './routes/authRoutes';
+import userRouter from './routes/userRoutes';
 import errorHandlerMiddleware from './middleware/errorHandlerMiddleware';
+import { notFound } from './middleware/notFound';
 
 const app = express();
 
@@ -31,7 +33,8 @@ app.use(helmet());
 app.use(limiter);
 app.set('trust proxy', 1);
 app.use('/api/v1/auth', authRouter);
-
+app.use('/api/v1/user', userRouter);
+app.use(notFound);
 app.use(errorHandlerMiddleware);
 
 const port: string | 5001 = process.env['PORT'] || 5001;

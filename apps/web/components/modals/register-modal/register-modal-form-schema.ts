@@ -32,4 +32,7 @@ export const formSchema = z.object({
 				message: 'Password must contain at least one digit and one special character',
 			},
 		),
+	type: z.enum(['student', 'teacher'], {
+		required_error: 'You need to choose your role.',
+	}),
 });

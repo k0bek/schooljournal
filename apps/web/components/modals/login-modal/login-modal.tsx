@@ -23,7 +23,8 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store';
 import { onClose } from '../../../redux/slices/modalSlice';
-import { useMutation, useQueryClient } from 'react-query';
+import { signInSuccess } from '../../../redux/slices/userSlice';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { postLogin, postRegister } from '../../../api/actions/auth/auth.queries';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -33,8 +34,8 @@ type ErrorType = { response: { data: { msg: string } } };
 
 export const LoginModal = () => {
 	const router = useRouter();
-	const queryClient = useQueryClient();
 	const { isOpen, type } = useSelector((state: RootState) => state.modal);
+	const { currentUser } = useSelector((state: RootState) => state.user);
 	const dispatch = useDispatch();
 	const isModalOpen = isOpen && type === 'login';
 	const [formError, setFormError] = useState<ErrorType>({ response: { data: { msg: '' } } });
@@ -52,10 +53,10 @@ export const LoginModal = () => {
 	const { status, error, mutate } = useMutation({
 		mutationFn: postLogin,
 		mutationKey: ['login'],
-		onSuccess: () => {
-			queryClient.invalidateQueries('login');
+		onSuccess: ({ data }) => {
 			form.reset();
 			dispatch(onClose());
+			dispatch(signInSuccess(data.user));
 			router.push('/home');
 			setFormError({ response: { data: { msg: '' } } });
 		},
@@ -66,7 +67,6 @@ export const LoginModal = () => {
 
 	const handleClose = () => {
 		setFormError({ response: { data: { msg: '' } } });
-		queryClient.removeQueries({ queryKey: 'login' });
 		form.reset();
 		router.refresh();
 		dispatch(onClose());
@@ -102,11 +102,11 @@ export const LoginModal = () => {
 										</FormLabel>
 										<FormControl>
 											<Input
-												disabled={isLoading}
 												className="border-0 bg-zinc-300/50 text-black focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-white"
 												placeholder="Enter email address"
 												{...field}
 												type="email"
+												disabled={status === 'pending'}
 											/>
 										</FormControl>
 										<FormMessage className="dark:text-red-400" />
@@ -123,11 +123,11 @@ export const LoginModal = () => {
 										</FormLabel>
 										<FormControl>
 											<Input
-												disabled={isLoading}
 												className="border-0 bg-zinc-300/50 text-black focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-white"
 												placeholder="Enter password"
 												{...field}
 												type="password"
+												disabled={status === 'pending'}
 											/>
 										</FormControl>
 										<FormMessage className="dark:text-red-400" />
@@ -141,7 +141,7 @@ export const LoginModal = () => {
 							)}
 						</div>
 						<DialogFooter className="bg-gray-100 px-6 py-4 dark:bg-slate-800">
-							<Button variant="default" disabled={isLoading} className="disabled:bg-violet-400">
+							<Button variant="default" disabled={status === 'pending'}>
 								Log in
 							</Button>
 						</DialogFooter>

@@ -10,7 +10,7 @@ import BadRequestError from '../errors/bad-request';
 
 export const google = async (req: Request, res: Response) => {
 	const { user } = req.body;
-	const { id, email, imageUrl, username } = user;
+	const { id, email, imageUrl, username, type } = user;
 	try {
 		const user = await db.user.findUnique({ where: { email } });
 		let refreshToken = '';
@@ -30,7 +30,7 @@ export const google = async (req: Request, res: Response) => {
 				}
 				refreshToken = existingToken.refreshToken;
 				attachCookiesToResponse({ res, user, refreshToken });
-				res.status(StatusCodes.OK).json({ user: token });
+				res.status(StatusCodes.OK).json({ user, token });
 				return;
 			} else {
 				refreshToken = crypto.randomBytes(40).toString('hex');
@@ -44,6 +44,7 @@ export const google = async (req: Request, res: Response) => {
 				attachCookiesToResponse({ res, user, refreshToken });
 				res.status(StatusCodes.OK).json({ user: token });
 			}
+			throw new UnauthenticatedError('There is no user with this email.');
 		} else {
 			refreshToken = crypto.randomBytes(40).toString('hex');
 			refreshToken = crypto.randomBytes(40).toString('hex');
@@ -59,11 +60,12 @@ export const google = async (req: Request, res: Response) => {
 					lastName: '',
 					password: hashedPassword,
 					imageUrl,
+					type,
 				},
 			});
 			const token = createJWT({ payload: { user } });
 			attachCookiesToResponse({ res, user, refreshToken });
-			res.status(StatusCodes.OK).json({ user: token });
+			res.status(StatusCodes.OK).json({ user, token });
 		}
 	} catch (error) {
 		console.log(error);
@@ -71,7 +73,7 @@ export const google = async (req: Request, res: Response) => {
 };
 
 export const register = async (req: Request, res: Response) => {
-	const { username, email, password } = req.body;
+	const { username, email, password, type } = req.body;
 	let refreshToken = '';
 
 	if (!username || !email || !password) {
@@ -99,6 +101,7 @@ export const register = async (req: Request, res: Response) => {
 				password: hashedPassword,
 				firstName: '',
 				lastName: '',
+				type,
 			},
 		});
 
@@ -112,7 +115,7 @@ export const register = async (req: Request, res: Response) => {
 			},
 		});
 
-		res.status(StatusCodes.CREATED).json({ user: token });
+		res.status(StatusCodes.CREATED).json({ token, user });
 	} catch (error) {
 		console.error('Error during user registration:', error);
 		return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
@@ -123,6 +126,7 @@ export const login = async (req: Request, res: Response) => {
 	const { email, password } = req.body;
 	let refreshToken = '';
 
+	console.log('KURWA');
 	if (!email || !password) {
 		throw new BadRequestError('Please provide email and password.');
 	}
@@ -150,7 +154,7 @@ export const login = async (req: Request, res: Response) => {
 				isValid: true,
 			},
 		});
-		res.status(StatusCodes.CREATED).json({ user: token });
+		res.status(StatusCodes.CREATED).json({ token, user });
 	} catch (error) {
 		console.error('Error during user registration:', error);
 		return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });

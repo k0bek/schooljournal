@@ -7,6 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum MemberType {
+  teacher
+  student
+}
+
 model User {
   id String @id @default(uuid()) @map("_id")
   username String
@@ -15,9 +20,11 @@ model User {
   email String @unique
   password String
   imageUrl String?
+  type MemberType
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  tokens    Token[]
 }
 
 model Token {
@@ -25,4 +32,5 @@ model Token {
   userId String
   refreshToken String
   isValid Boolean
+  user          User      @relation(fields: [userId], references: [id])
 }

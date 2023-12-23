@@ -20,47 +20,44 @@ import {
 	FormLabel,
 	FormMessage,
 } from 'ui/components/ui/form';
-import { RadioGroup, RadioGroupItem } from 'ui/components/ui/radio-group';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store';
 import { onClose } from '../../../redux/slices/modalSlice';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { postRegister } from '../../../api/actions/auth/auth.queries';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { formSchema } from './register-modal-form-schema';
+import { formSchema } from './firstNameLastName-schema';
+import React from 'react';
 import { signInSuccess } from '../../../redux/slices/userSlice';
 
 type ErrorType = { response: { data: { msg: string } } };
 
-export const RegisterModal = () => {
+export const FirstNameLastNameModal = () => {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 	const { isOpen, type } = useSelector((state: RootState) => state.modal);
+	const { currentUser } = useSelector((state: RootState) => state.user);
 	const dispatch = useDispatch();
-	const isModalOpen = isOpen && type === 'register';
+	const isModalOpen = isOpen && type === 'firstNameLastName';
 	const [formError, setFormError] = useState<ErrorType>({ response: { data: { msg: '' } } });
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			username: '',
-			email: '',
-			password: '',
-			type: 'student',
+			firstName: '',
+			lastName: '',
 		},
 	});
 
 	const isLoading = form.formState.isSubmitting;
 
 	const { status, error, mutate } = useMutation({
-		mutationFn: postRegister,
-		mutationKey: ['register'],
+		// mutationFn: updateUser,
+		mutationKey: ['firstNamelastName'],
 		onSuccess: ({ data }) => {
-			dispatch(onClose());
 			form.reset();
 			dispatch(signInSuccess(data.user));
-			router.push('/home');
+			dispatch(onClose());
 			setFormError({ response: { data: { msg: '' } } });
 		},
 		onError: (data: ErrorType) => {
@@ -75,20 +72,9 @@ export const RegisterModal = () => {
 		dispatch(onClose());
 	};
 
-	const onSubmit = ({
-		username,
-		email,
-		password,
-		type,
-	}: {
-		username?: string;
-		email?: string;
-		password?: string;
-		type?: string;
-	}) => {
+	const onSubmit = ({ firstName, lastName }: { firstName: string; lastName: string }) => {
 		try {
-			console.log(type);
-			mutate({ username, email, password, type });
+			// mutate({ firstName, lastName, email:currentUser?.email});
 			router.refresh();
 		} catch (error) {
 			console.log(error);
@@ -100,7 +86,7 @@ export const RegisterModal = () => {
 			<DialogContent className="overflow-hidden bg-white p-0 text-black dark:bg-gray-900 dark:text-white">
 				<DialogHeader className="px-6 pt-8 dark:bg-gray-900">
 					<DialogTitle className="text-center text-2xl font-bold dark:bg-gray-900 dark:text-white">
-						Create an account
+						Enter your full name
 					</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
@@ -108,16 +94,16 @@ export const RegisterModal = () => {
 						<div className="space-y-8 px-6">
 							<FormField
 								control={form.control}
-								name="username"
+								name="firstName"
 								render={({ field }) => (
 									<FormItem>
 										<FormLabel className="text-xs font-bold uppercase text-zinc-500 dark:text-secondary/70 dark:text-white">
-											Username
+											First name
 										</FormLabel>
 										<FormControl>
 											<Input
 												className="border-0 bg-zinc-300/50 text-black focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-white"
-												placeholder="Enter username"
+												placeholder="Enter your first name"
 												{...field}
 												type="text"
 												disabled={status === 'pending'}
@@ -129,75 +115,19 @@ export const RegisterModal = () => {
 							/>
 							<FormField
 								control={form.control}
-								name="email"
+								name="lastName"
 								render={({ field }) => (
 									<FormItem>
 										<FormLabel className="text-xs font-bold uppercase text-zinc-500 dark:text-secondary/70 dark:text-white">
-											Email
+											Last name
 										</FormLabel>
 										<FormControl>
 											<Input
 												className="border-0 bg-zinc-300/50 text-black focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-white"
-												placeholder="Enter email address"
+												placeholder="Enter your last name"
 												{...field}
-												type="email"
-												disabled={status === 'pending'}
+												type="text"
 											/>
-										</FormControl>
-										<FormMessage className="dark:text-red-400" />
-									</FormItem>
-								)}
-							/>
-							<FormField
-								control={form.control}
-								name="password"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel className="text-xs font-bold uppercase text-zinc-500 dark:text-secondary/70 dark:text-white">
-											Password
-										</FormLabel>
-										<FormControl>
-											<Input
-												className="border-0 bg-zinc-300/50 text-black focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-white"
-												placeholder="Enter password"
-												{...field}
-												type="password"
-												disabled={status === 'pending'}
-											/>
-										</FormControl>
-										<FormMessage className="dark:text-red-400" />
-									</FormItem>
-								)}
-							/>
-							<FormField
-								control={form.control}
-								name="type"
-								render={({ field }) => (
-									<FormItem className="space-y-3">
-										<FormLabel className="text-xs font-bold uppercase text-zinc-500 dark:text-secondary/70 dark:text-white">
-											Who are you?
-										</FormLabel>
-
-										<FormControl>
-											<RadioGroup
-												onValueChange={field.onChange}
-												defaultValue={field.value}
-												className="flex flex-col space-y-1"
-												disabled={status === 'pending'}
-											>
-												<FormItem className="flex items-center space-x-3 space-y-0">
-													<FormControl>
-														<RadioGroupItem value="student" />
-													</FormControl>
-													<FormLabel className="font-normal">Student</FormLabel>
-												</FormItem>
-												<FormItem className="flex items-center space-x-3 space-y-0">
-													<FormControl>
-														<RadioGroupItem value="teacher" />
-													</FormControl>
-													<FormLabel className="font-normal">Teacher</FormLabel>
-												</FormItem>
-											</RadioGroup>
 										</FormControl>
 										<FormMessage className="dark:text-red-400" />
 									</FormItem>
@@ -211,7 +141,7 @@ export const RegisterModal = () => {
 						</div>
 						<DialogFooter className="bg-gray-100 px-6 py-4 dark:bg-slate-800">
 							<Button variant="default" disabled={status === 'pending'}>
-								Create
+								Save changes
 							</Button>
 						</DialogFooter>
 					</form>

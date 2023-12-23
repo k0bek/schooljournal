@@ -1,8 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
-import type { RootState } from '../store';
 
-export type ModalType = 'login' | 'register';
+export type ModalType = 'login' | 'register' | 'firstNameLastName';
 
 // Define a type for the slice state
 interface ModalState {

@@ -1,6 +1,4 @@
-const withNextIntl = require('next-intl/plugin')();
-
-module.exports = withNextIntl({
+module.exports = {
 	reactStrictMode: true,
 	transpilePackages: ['ui'],
 	async rewrites() {
@@ -11,4 +9,4 @@ module.exports = withNextIntl({
 			},
 		];
 	},
-});
+};
