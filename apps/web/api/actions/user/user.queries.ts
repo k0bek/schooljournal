@@ -7,3 +7,19 @@ export const showCurrentUser = async () => {
 		throw error;
 	}
 };
+
+export const updateUser = async ({
+	firstName,
+	lastName,
+	email,
+}: {
+	firstName: string;
+	lastName: string;
+	email: string;
+}) => {
+	try {
+		return await axios.patch('/api/v1/user/updateUser', { email, firstName, lastName });
+	} catch (error) {
+		throw error;
+	}
+};

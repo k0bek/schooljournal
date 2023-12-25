@@ -34,3 +34,17 @@ export const postLogin = async ({ email, password }: { email: string; password: 
 		throw error;
 	}
 };
+
+export const postVerifyAccount = async ({
+	userId,
+	tokenId,
+}: {
+	userId: string | string[];
+	tokenId: string | string[];
+}) => {
+	try {
+		return await axios.post(`/api/v1/auth/users/${userId}/verify/${tokenId}`, { userId, tokenId });
+	} catch (error) {
+		throw error;
+	}
+};

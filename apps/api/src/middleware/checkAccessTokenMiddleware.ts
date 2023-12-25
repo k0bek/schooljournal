@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { isTokenValid } from '../utils/jwt';
 import UnauthenticatedError from '../errors/unauthenticated';
 import { User } from '@prisma/client';
+import { db } from '../../../../packages/database/db';
 
 interface AuthenticatedRequest extends Request {
 	user?: User | {};
@@ -16,9 +17,12 @@ export const authenticateUser = async (
 
 	try {
 		if (accessToken) {
-			const payload = await isTokenValid(accessToken);
 			// @ts-ignore
-			req.user = payload.user;
+			const { user } = await isTokenValid(accessToken);
+			const updatedUser = await db.user.findUnique({ where: { email: user.email } });
+			// @ts-ignore
+			req.user = updatedUser;
+
 			next();
 		} else {
 			throw new UnauthenticatedError('Access Token is missing');

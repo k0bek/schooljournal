@@ -12,6 +12,7 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
 		queryKey: ['user'],
 		queryFn: showCurrentUser,
 	});
+
 	useEffect(() => {
 		if (data?.user) {
 			dispatch(signInSuccess(data?.user));

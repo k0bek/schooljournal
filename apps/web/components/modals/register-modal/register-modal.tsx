@@ -23,7 +23,7 @@ import {
 import { RadioGroup, RadioGroupItem } from 'ui/components/ui/radio-group';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store';
-import { onClose } from '../../../redux/slices/modalSlice';
+import { onClose, onOpen } from '../../../redux/slices/modalSlice';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { postRegister } from '../../../api/actions/auth/auth.queries';
 import { useRouter } from 'next/navigation';
@@ -60,8 +60,8 @@ export const RegisterModal = () => {
 			dispatch(onClose());
 			form.reset();
 			dispatch(signInSuccess(data.user));
-			router.push('/home');
 			setFormError({ response: { data: { msg: '' } } });
+			dispatch(onOpen('verify'));
 		},
 		onError: (data: ErrorType) => {
 			setFormError(data);
