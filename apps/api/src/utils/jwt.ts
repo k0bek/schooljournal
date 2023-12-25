@@ -7,8 +7,9 @@ export const createJWT = ({ payload }: { payload: { user: User; refreshToken?: s
 	return token;
 };
 
-export const isTokenValid = (token: string) =>
-	jwt.verify(token, process.env['JWT_SECRET'] as Secret | GetPublicKeyOrSecret);
+export const isTokenValid = (token: string) => {
+	return jwt.verify(token, process.env['JWT_SECRET'] as Secret | GetPublicKeyOrSecret);
+};
 
 export const attachCookiesToResponse = ({
 	res,

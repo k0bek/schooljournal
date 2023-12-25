@@ -1,9 +1,9 @@
 import express from 'express';
-// import { updateUser, showCurrentUser } from '../controllers/userController';
-import { showCurrentUser } from '../controllers/userController';
+import { showCurrentUser, updateUser } from '../controllers/userController';
 import { authenticateUser } from '../middleware/checkAccessTokenMiddleware';
 const router = express.Router();
 
 router.get('/showMe', authenticateUser, showCurrentUser);
+router.patch('/updateUser', updateUser);
 
 export default router;

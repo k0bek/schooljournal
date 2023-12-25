@@ -21,6 +21,7 @@ model User {
   password String
   imageUrl String?
   type MemberType
+  verified Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -17,7 +17,7 @@ const HomePage = () => {
 		}
 	}, []);
 
-	return <div>{currentUser.firstName}</div>;
+	return <div>{currentUser?.firstName}</div>;
 };
 
 export default HomePage;

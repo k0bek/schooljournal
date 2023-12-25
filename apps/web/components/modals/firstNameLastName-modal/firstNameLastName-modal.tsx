@@ -29,6 +29,7 @@ import { useState } from 'react';
 import { formSchema } from './firstNameLastName-schema';
 import React from 'react';
 import { signInSuccess } from '../../../redux/slices/userSlice';
+import { updateUser } from '../../../api/actions/user/user.queries';
 
 type ErrorType = { response: { data: { msg: string } } };
 
@@ -52,11 +53,11 @@ export const FirstNameLastNameModal = () => {
 	const isLoading = form.formState.isSubmitting;
 
 	const { status, error, mutate } = useMutation({
-		// mutationFn: updateUser,
+		mutationFn: updateUser,
 		mutationKey: ['firstNamelastName'],
 		onSuccess: ({ data }) => {
 			form.reset();
-			dispatch(signInSuccess(data.user));
+			dispatch(signInSuccess(data.updatedUser));
 			dispatch(onClose());
 			setFormError({ response: { data: { msg: '' } } });
 		},
@@ -74,7 +75,7 @@ export const FirstNameLastNameModal = () => {
 
 	const onSubmit = ({ firstName, lastName }: { firstName: string; lastName: string }) => {
 		try {
-			// mutate({ firstName, lastName, email:currentUser?.email});
+			mutate({ firstName, lastName, email: currentUser?.email });
 			router.refresh();
 		} catch (error) {
 			console.log(error);
