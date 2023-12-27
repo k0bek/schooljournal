@@ -14,7 +14,7 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
 	});
 
 	useEffect(() => {
-		if (data?.user) {
+		if (data) {
 			dispatch(signInSuccess(data?.user));
 		} else {
 			dispatch(signInSuccess({}));
