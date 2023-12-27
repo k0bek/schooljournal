@@ -9,8 +9,7 @@ interface AuthenticatedRequest extends Request {
 }
 
 export const updateUser = async (req: Request, res: Response) => {
-	const { email, firstName, lastName } = req.body;
-	console.log(email);
+	const { email } = req.body;
 	const user = await db.user.findUnique({ where: { email } });
 	if (user) {
 		const updatedUser = await db.user.update({
@@ -18,8 +17,7 @@ export const updateUser = async (req: Request, res: Response) => {
 				email,
 			},
 			data: {
-				firstName,
-				lastName,
+				...req.body,
 			},
 		});
 		res.status(StatusCodes.CREATED).json({ updatedUser });

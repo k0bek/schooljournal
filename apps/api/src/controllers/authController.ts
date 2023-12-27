@@ -9,11 +9,16 @@ import BadRequestError from '../errors/bad-request';
 import { sendEmail } from './../utils/sendEmail';
 
 export const google = async (req: Request, res: Response) => {
-	const { user } = req.body;
-	const { id, email, imageUrl, username, type } = user;
+	const { id, email, imageUrl, username } = req.body;
 	try {
 		const user = await db.user.findUnique({ where: { email } });
 		let refreshToken = '';
+
+		if (user?.authType === 'register') {
+			throw new BadRequestError(
+				'This email is already associated with a regular account registration. Please use a different email address for registration.',
+			);
+		}
 
 		if (user) {
 			const payload = { user };
@@ -60,7 +65,9 @@ export const google = async (req: Request, res: Response) => {
 					lastName: '',
 					password: hashedPassword,
 					imageUrl,
-					type,
+					type: 'student',
+					authType: 'google',
+					verified: true,
 				},
 			});
 			const token = createJWT({ payload: { user } });
@@ -80,6 +87,7 @@ export const register = async (req: Request, res: Response) => {
 		return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Invalid input data' });
 	}
 
+	const user = await db.user.findUnique({ where: { email } });
 	const doesEmailAlreadyExist = await db.user.findUnique({ where: { email } });
 	const doesUsernameAlreadyExist = await db.user.findFirst({ where: { username } });
 
@@ -88,6 +96,12 @@ export const register = async (req: Request, res: Response) => {
 	}
 	if (doesUsernameAlreadyExist) {
 		throw new BadRequestError('Username already in use.');
+	}
+
+	if (user?.authType === 'google') {
+		throw new BadRequestError(
+			'This email is already associated with a google account. Please use a different email address for registration.',
+		);
 	}
 
 	const hashedPassword = await bcryptjs.hash(password, 10);
@@ -102,6 +116,7 @@ export const register = async (req: Request, res: Response) => {
 				firstName: '',
 				lastName: '',
 				type,
+				authType: 'register',
 			},
 		});
 
@@ -116,13 +131,11 @@ export const register = async (req: Request, res: Response) => {
 		const url = `${process.env.BASE_URL}users/${user.id}/verify/${token}`;
 		await sendEmail(user.email, 'Verify Email', `Click the link to verify your account: \n${url}`);
 
-		res
-			.status(StatusCodes.CREATED)
-			.json({
-				token,
-				user,
-				msg: 'Please confirm your email to complete the registration process and start enjoying our services.',
-			});
+		res.status(StatusCodes.CREATED).json({
+			token,
+			user,
+			msg: 'Please confirm your email to complete the registration process and start enjoying our services.',
+		});
 	} catch (error) {
 		console.error('Error during user registration:', error);
 		return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });

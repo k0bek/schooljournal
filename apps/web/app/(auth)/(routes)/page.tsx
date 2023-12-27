@@ -3,8 +3,8 @@
 import Lottie from 'lottie-react';
 import animationData from '../../../public/animations/school-animation.json';
 import { Button } from 'ui';
-import { ModeToggle } from '../../../components/mode-toggle';
-import { OAuth } from '../../../components/OAuth';
+import { ModeToggle } from '../../../components/layout/mode-toggle';
+import { OAuth } from '../../../components/auth/OAuth';
 import { onOpen } from '../../../redux/slices/modalSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store';

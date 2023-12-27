@@ -8,17 +8,9 @@ export const showCurrentUser = async () => {
 	}
 };
 
-export const updateUser = async ({
-	firstName,
-	lastName,
-	email,
-}: {
-	firstName: string;
-	lastName: string;
-	email: string;
-}) => {
+export const updateUser = async user => {
 	try {
-		return await axios.patch('/api/v1/user/updateUser', { email, firstName, lastName });
+		return await axios.patch('/api/v1/user/updateUser', user);
 	} catch (error) {
 		throw error;
 	}

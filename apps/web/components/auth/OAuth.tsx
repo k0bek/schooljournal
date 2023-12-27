@@ -1,27 +1,35 @@
+'use client';
+
 import { FcGoogle } from 'react-icons/fc';
 import { Button } from 'ui';
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { app } from './../firebase';
+import { app } from '../../firebase';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { postGoogleAuth } from '../api/actions/auth/auth.queries';
+import { postGoogleAuth } from '../../api/actions/auth/auth.queries';
 import { useRouter } from 'next/navigation';
+import { useDispatch } from 'react-redux';
+import { signInSuccess } from '../../redux/slices/userSlice';
 
 export const OAuth = () => {
 	const queryClient = useQueryClient();
 	const router = useRouter();
+	const dispatch = useDispatch();
 
-	// const { status, error, mutate } = useMutation(postGoogleAuth, {
-	// 	onSuccess: () => {
-	// 		router.push('/home');
-	// 	},
-	// });
+	const { status, error, mutate } = useMutation({
+		mutationFn: postGoogleAuth,
+		mutationKey: ['google'],
+		onSuccess: ({ data }) => {
+			router.push('/home');
+			dispatch(signInSuccess(data.user));
+		},
+	});
 
 	const handleGoogleClick = async () => {
 		const provider = new GoogleAuthProvider();
 		const auth = getAuth(app);
 		const result = await signInWithPopup(auth, provider);
 		const { uid, email, photoURL: imageUrl, displayName } = result.user;
-		// mutate({ id: uid, email, imageUrl, username: displayName });
+		mutate({ id: uid, email, imageUrl, username: displayName });
 	};
 
 	return (
@@ -31,7 +39,7 @@ export const OAuth = () => {
 			variant="outline"
 		>
 			<FcGoogle className="text-2xl" />
-			{'Sign up with Google'}
+			Sign up with Google
 		</Button>
 	);
 };

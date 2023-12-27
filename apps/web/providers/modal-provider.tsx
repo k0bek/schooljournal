@@ -5,6 +5,7 @@ import { RegisterModal } from '../components/modals/register-modal/register-moda
 import { LoginModal } from '../components/modals/login-modal/login-modal';
 import { FirstNameLastNameModal } from '../components/modals/firstNameLastName-modal/firstNameLastName-modal';
 import { VerifyModal } from '../components/modals/verify-modal/verify-modal';
+import { UpdateUserModal } from '../components/modals/updateUser-modal/updateUser-modal';
 
 const ModalProvider = () => {
 	const [isMounted, setIsMounted] = useState(false);
@@ -23,6 +24,7 @@ const ModalProvider = () => {
 			<LoginModal />
 			<FirstNameLastNameModal />
 			<VerifyModal />
+			<UpdateUserModal />
 		</>
 	);
 };

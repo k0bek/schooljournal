@@ -11,6 +11,10 @@ enum MemberType {
   teacher
   student
 }
+enum AuthType {
+  google
+  register
+}
 
 model User {
   id String @id @default(uuid()) @map("_id")
@@ -22,6 +26,7 @@ model User {
   imageUrl String?
   type MemberType
   verified Boolean @default(false)
+  authType AuthType
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
