@@ -9,66 +9,74 @@ import BadRequestError from '../errors/bad-request';
 import { sendEmail } from './../utils/sendEmail';
 
 export const google = async (req: Request, res: Response) => {
-	const { user } = req.body;
-	const { id, email, imageUrl, username, type } = user;
-	try {
-		const user = await db.user.findUnique({ where: { email } });
-		let refreshToken = '';
+	const { id, email, imageUrl, username } = req.body;
+	const user = await db.user.findUnique({ where: { email } });
+	let refreshToken = '';
 
-		if (user) {
-			const payload = { user };
-			const token = createJWT({ payload });
-			const existingToken = await db.token.findFirst({
-				where: {
-					userId: id,
-				},
-			});
-			if (existingToken) {
-				const { isValid } = existingToken;
-				if (!isValid) {
-					throw new UnauthenticatedError('Invalid Credentials');
-				}
-				refreshToken = existingToken.refreshToken;
-				attachCookiesToResponse({ res, user, refreshToken });
-				res.status(StatusCodes.OK).json({ user, token });
-				return;
-			} else {
-				refreshToken = crypto.randomBytes(40).toString('hex');
-				await db.token.create({
-					data: {
-						userId: id,
-						refreshToken,
-						isValid: true,
-					},
-				});
-				attachCookiesToResponse({ res, user, refreshToken });
-				res.status(StatusCodes.OK).json({ user: token });
+	if (user) {
+		const token = createJWT({ payload: { user } });
+		const existingToken = await db.token.findFirst({
+			where: {
+				userId: id,
+			},
+		});
+
+		if (user?.authType === 'register') {
+			throw new BadRequestError(
+				'This email is already associated with a normal registration. Please use a different email address for registration.',
+			);
+		}
+		if (existingToken) {
+			const { isValid } = existingToken;
+			if (!isValid) {
+				throw new BadRequestError('Invalid Credentials');
 			}
-			throw new UnauthenticatedError('There is no user with this email.');
+			refreshToken = existingToken.refreshToken;
+			attachCookiesToResponse({ res, user, refreshToken });
+			return res.status(StatusCodes.OK).json({ user, token });
 		} else {
 			refreshToken = crypto.randomBytes(40).toString('hex');
-			refreshToken = crypto.randomBytes(40).toString('hex');
-			const generatedPassword =
-				Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
-			const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
-
-			const user = await db.user.create({
+			await db.token.create({
 				data: {
-					username,
-					email,
-					firstName: '',
-					lastName: '',
-					password: hashedPassword,
-					imageUrl,
-					type,
+					userId: user.id,
+					refreshToken,
+					isValid: true,
 				},
 			});
-			const token = createJWT({ payload: { user } });
 			attachCookiesToResponse({ res, user, refreshToken });
-			res.status(StatusCodes.OK).json({ user, token });
+			return res.status(StatusCodes.OK).json({ user, token });
 		}
-	} catch (error) {
-		console.log(error);
+	} else {
+		refreshToken = crypto.randomBytes(40).toString('hex');
+		refreshToken = crypto.randomBytes(40).toString('hex');
+		const generatedPassword =
+			Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+		const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
+
+		const user = await db.user.create({
+			data: {
+				username,
+				email,
+				firstName: '',
+				lastName: '',
+				password: hashedPassword,
+				imageUrl,
+				type: 'null',
+				authType: 'google',
+				verified: true,
+			},
+		});
+
+		const token = createJWT({ payload: { user } });
+		attachCookiesToResponse({ res, user, refreshToken });
+		await db.token.create({
+			data: {
+				userId: user.id,
+				refreshToken,
+				isValid: true,
+			},
+		});
+		return res.status(StatusCodes.OK).json({ user, token });
 	}
 };
 
@@ -77,7 +85,7 @@ export const register = async (req: Request, res: Response) => {
 	let refreshToken = '';
 
 	if (!username || !email || !password) {
-		return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Invalid input data' });
+		throw new BadRequestError("Invalid input data'");
 	}
 
 	const doesEmailAlreadyExist = await db.user.findUnique({ where: { email } });
@@ -92,41 +100,49 @@ export const register = async (req: Request, res: Response) => {
 
 	const hashedPassword = await bcryptjs.hash(password, 10);
 
-	try {
-		refreshToken = crypto.randomBytes(40).toString('hex');
-		const user = await db.user.create({
-			data: {
-				username,
-				email,
-				password: hashedPassword,
-				firstName: '',
-				lastName: '',
-				type,
-			},
-		});
+	refreshToken = crypto.randomBytes(40).toString('hex');
+	const user = await db.user.create({
+		data: {
+			username,
+			email,
+			password: hashedPassword,
+			firstName: '',
+			lastName: '',
+			type,
+			authType: 'register',
+		},
+		select: {
+			id: true,
+			username: true,
+			email: true,
+			firstName: true,
+			lastName: true,
+			password: true,
+			imageUrl: true,
+			type: true,
+			authType: true,
+			verified: true,
+			createdAt: true,
+			updatedAt: true,
+		},
+	});
 
-		const token = createJWT({ payload: { user } });
-		await db.token.create({
-			data: {
-				userId: user.id,
-				refreshToken,
-				isValid: true,
-			},
-		});
-		const url = `${process.env.BASE_URL}users/${user.id}/verify/${token}`;
-		await sendEmail(user.email, 'Verify Email', `Click the link to verify your account: \n${url}`);
+	const token = createJWT({ payload: { user } });
+	await db.token.create({
+		data: {
+			userId: user.id,
+			refreshToken,
+			isValid: true,
+		},
+	});
+	const url = `${process.env.BASE_URL}users/${user.id}/verify/${token}`;
+	await sendEmail(user.email, 'Verify Email', `Click the link to verify your account: \n${url}`);
 
-		res
-			.status(StatusCodes.CREATED)
-			.json({
-				token,
-				user,
-				msg: 'Please confirm your email to complete the registration process and start enjoying our services.',
-			});
-	} catch (error) {
-		console.error('Error during user registration:', error);
-		return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
-	}
+	res.status(StatusCodes.CREATED).json({
+		token,
+		user,
+		msg: 'Please confirm your email to complete the registration process and start enjoying our services.',
+	});
 };
 
 export const login = async (req: Request, res: Response) => {
@@ -138,6 +154,12 @@ export const login = async (req: Request, res: Response) => {
 	}
 
 	const user = await db.user.findUnique({ where: { email } });
+
+	if (user?.authType === 'google') {
+		throw new UnauthenticatedError(
+			'This email is already associated with a google account. Please use a different email address for registration.',
+		);
+	}
 
 	if (!user) {
 		throw new UnauthenticatedError('There is no user with this email.');
@@ -156,55 +178,75 @@ export const login = async (req: Request, res: Response) => {
 		throw new UnauthenticatedError('Your account is not verified. Please check your mail.');
 	}
 
-	try {
-		refreshToken = crypto.randomBytes(40).toString('hex');
-		const token = createJWT({ payload: { user } });
-		attachCookiesToResponse({ res, user, refreshToken });
-		await db.token.create({
-			data: {
-				userId: user.id,
-				refreshToken,
-				isValid: true,
-			},
-		});
-		res.status(StatusCodes.CREATED).json({ token, user });
-	} catch (error) {
-		console.error('Error during user registration:', error);
-		return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
-	}
+	refreshToken = crypto.randomBytes(40).toString('hex');
+	const token = createJWT({ payload: { user } });
+	attachCookiesToResponse({ res, user, refreshToken });
+	await db.token.create({
+		data: {
+			userId: user.id,
+			refreshToken,
+			isValid: true,
+		},
+	});
+	res.status(StatusCodes.CREATED).json({ token, user });
 };
 
 export const verifyEmail = async (req: Request, res: Response) => {
-	try {
-		const user = await db.user.findUnique({ where: { id: req.params.id } });
-		if (!user) {
-			throw new BadRequestError('Invalid link.');
-		}
-
-		const existingToken = await db.token.findFirst({
-			where: {
-				userId: user.id,
-			},
-		});
-
-		if (!existingToken) {
-			throw new BadRequestError('Invalid link.');
-		}
-
-		const updatedUser = await db.user.update({
-			where: { id: req.params.id },
-			data: { verified: true },
-		});
-		await db.token.delete({
-			where: {
-				id: existingToken.id,
-			},
-		});
-
-		return res
-			.status(StatusCodes.OK)
-			.json({ updatedUser, msg: 'Your account is now confirmed. Welcome aboard!' });
-	} catch (error) {
-		return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
+	const user = await db.user.findUnique({ where: { id: req.params.id } });
+	if (!user) {
+		throw new BadRequestError('Invalid link.');
 	}
+
+	const existingToken = await db.token.findFirst({
+		where: {
+			userId: user.id,
+		},
+	});
+
+	if (!existingToken) {
+		throw new BadRequestError('Invalid link.');
+	}
+
+	const updatedUser = await db.user.update({
+		where: { id: req.params.id },
+		data: { verified: true },
+	});
+	await db.token.delete({
+		where: {
+			id: existingToken.id,
+		},
+	});
+
+	return res
+		.status(StatusCodes.OK)
+		.json({ updatedUser, msg: 'Your account is now confirmed. Welcome aboard!' });
+};
+
+export const logout = async (req: Request, res: Response) => {
+	const { userId } = req.body;
+	const existingToken = await db.token.findFirst({
+		where: {
+			userId,
+		},
+	});
+
+	if (!existingToken) {
+		throw new BadRequestError('Invalid link.');
+	}
+
+	await db.token.delete({
+		where: {
+			id: existingToken.id,
+		},
+	});
+
+	res.cookie('accessToken', 'logout', {
+		httpOnly: true,
+		expires: new Date(Date.now()),
+	});
+	res.cookie('refreshToken', 'logout', {
+		httpOnly: true,
+		expires: new Date(Date.now()),
+	});
+	res.status(StatusCodes.OK).json({ msg: 'user logged out!' });
 };

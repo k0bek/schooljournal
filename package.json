@@ -31,6 +31,9 @@
     "packages/*"
   ],
   "dependencies": {
+    "@knocklabs/node": "^0.5.0",
+    "@knocklabs/react-notification-feed": "^0.8.13",
+    "cmdk": "^0.2.0",
     "dotenv": "^16.3.1",
     "radix-ui": "^1.0.1"
   }

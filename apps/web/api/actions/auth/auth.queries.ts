@@ -1,9 +1,18 @@
-import axios, { AxiosInstance } from 'axios';
-import { UserProps } from './../../../../../packages/lib/types';
+import axios from 'axios';
 
-export const postGoogleAuth = async (user: UserProps) => {
+export const postGoogleAuth = async ({
+	id,
+	email,
+	imageUrl,
+	username,
+}: {
+	id: string;
+	email: string;
+	imageUrl: string;
+	username: string;
+}) => {
 	try {
-		await axios.post('/api/v1/auth/google', { user });
+		return await axios.post('/api/v1/auth/google', { id, email, imageUrl, username });
 	} catch (error) {
 		throw error;
 	}
@@ -44,6 +53,14 @@ export const postVerifyAccount = async ({
 }) => {
 	try {
 		return await axios.post(`/api/v1/auth/users/${userId}/verify/${tokenId}`, { userId, tokenId });
+	} catch (error) {
+		throw error;
+	}
+};
+
+export const logout = async ({ userId }: { userId: string }) => {
+	try {
+		return await axios.post('/api/v1/auth/logout', { userId });
 	} catch (error) {
 		throw error;
 	}

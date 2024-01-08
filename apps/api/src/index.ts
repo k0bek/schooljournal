@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
-import express from 'express';
 import 'express-async-errors';
+import express from 'express';
 import { urlencoded } from 'body-parser';
 import morgan from 'morgan';
 import cors from 'cors';
@@ -11,14 +11,11 @@ import cookieParser from 'cookie-parser';
 import { connectDB } from './db/connectToDatabase';
 import authRouter from './routes/authRoutes';
 import userRouter from './routes/userRoutes';
+import classRouter from './routes/classRoutes';
 import errorHandlerMiddleware from './middleware/errorHandlerMiddleware';
 import { notFound } from './middleware/notFound';
 
 const app = express();
-
-app.use(express.json());
-app.use(urlencoded({ extended: true }));
-app.use(cookieParser(process.env.JWT_SECRET));
 
 const limiter: RateLimitRequestHandler = rateLimit({
 	windowMs: 15 * 60 * 1000, // 15 minutes
@@ -26,14 +23,20 @@ const limiter: RateLimitRequestHandler = rateLimit({
 	standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
 	legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
 });
-
-app.use(morgan('tiny'));
-app.use(cors());
-app.use(helmet());
-app.use(limiter);
 app.set('trust proxy', 1);
+app.use(morgan('tiny'));
+app.use(helmet());
+app.use(cors());
+app.use(limiter);
+
+app.use(express.json());
+app.use(urlencoded({ extended: true }));
+app.use(cookieParser(process.env.JWT_SECRET));
+
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/user', userRouter);
+app.use('/api/v1/class', classRouter);
+
 app.use(notFound);
 app.use(errorHandlerMiddleware);
 
