@@ -10,33 +10,50 @@ datasource db {
 enum MemberType {
   teacher
   student
+  null
 }
+
 enum AuthType {
   google
   register
 }
 
 model User {
-  id String @id @default(uuid()) @map("_id")
-  username String
-  firstName String
-  lastName String
-  email String @unique
-  password String
-  imageUrl String?
-  type MemberType
-  verified Boolean @default(false)
-  authType AuthType
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  tokens    Token[]
+  id               String     @id @default(uuid()) @map("_id")
+  username         String
+  firstName        String
+  lastName         String
+  email            String     @unique
+  password         String
+  imageUrl         String?
+  type             MemberType @default(null)
+  verified         Boolean    @default(false)
+  authType         AuthType
+  tokens           Token[]
+  formTeacherClass Class[]    @relation("formTeacher")
+  class            Class      @relation("student", onDelete: NoAction, onUpdate: NoAction, fields: [id], references: [id])
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
 }
 
 model Token {
-  id String @id @default(uuid()) @map("_id")
-  userId String
+  id           String   @id @default(uuid()) @map("_id")
+  userId       String
   refreshToken String
-  isValid Boolean
-  user          User      @relation(fields: [userId], references: [id])
+  isValid      Boolean
+  user         User     @relation(fields: [userId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Class {
+  id               String   @id @default(uuid()) @map("_id")
+  className        String   @unique
+  numberOfStudents Int
+  subjects         String[]
+  formTeacherId    String   
+  formTeacher      User     @relation("formTeacher", fields: [formTeacherId], references: [id])
+  students         User[]   @relation("student")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }

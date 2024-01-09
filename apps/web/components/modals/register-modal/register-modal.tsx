@@ -35,7 +35,6 @@ type ErrorType = { response: { data: { msg: string } } };
 
 export const RegisterModal = () => {
 	const router = useRouter();
-	const queryClient = useQueryClient();
 	const { isOpen, type } = useSelector((state: RootState) => state.modal);
 	const dispatch = useDispatch();
 	const isModalOpen = isOpen && type === 'register';
@@ -51,8 +50,6 @@ export const RegisterModal = () => {
 		},
 	});
 
-	const isLoading = form.formState.isSubmitting;
-
 	const { status, error, mutate } = useMutation({
 		mutationFn: postRegister,
 		mutationKey: ['register'],
@@ -67,6 +64,8 @@ export const RegisterModal = () => {
 			setFormError(data);
 		},
 	});
+
+	console.log(error);
 
 	const handleClose = () => {
 		setFormError({ response: { data: { msg: '' } } });

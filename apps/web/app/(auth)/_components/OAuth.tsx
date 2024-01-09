@@ -3,15 +3,17 @@
 import { FcGoogle } from 'react-icons/fc';
 import { Button } from 'ui';
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { app } from '../../firebase';
+import { app } from '../../../firebase';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { postGoogleAuth } from '../../api/actions/auth/auth.queries';
+import { postGoogleAuth } from '../../../api/actions/auth/auth.queries';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
-import { signInSuccess } from '../../redux/slices/userSlice';
+import { signInSuccess } from '../../../redux/slices/userSlice';
+import { toast } from 'sonner';
+
+type ErrorType = { response: { data: { msg: string } } };
 
 export const OAuth = () => {
-	const queryClient = useQueryClient();
 	const router = useRouter();
 	const dispatch = useDispatch();
 
@@ -22,7 +24,12 @@ export const OAuth = () => {
 			router.push('/home');
 			dispatch(signInSuccess(data.user));
 		},
+		onError: (data: ErrorType) => {
+			toast.error(data.response.data.msg);
+		},
 	});
+
+	console.log(error);
 
 	const handleGoogleClick = async () => {
 		const provider = new GoogleAuthProvider();

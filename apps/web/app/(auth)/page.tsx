@@ -1,17 +1,14 @@
 'use client';
 
 import Lottie from 'lottie-react';
-import animationData from '../../../public/animations/school-animation.json';
+import animationData from '../../public/animations/school-animation.json';
 import { Button } from 'ui';
-import { ModeToggle } from '../../../components/layout/mode-toggle';
-import { OAuth } from '../../../components/auth/OAuth';
-import { onOpen } from '../../../redux/slices/modalSlice';
+import { OAuth } from './_components/OAuth';
+import { onOpen } from '../../redux/slices/modalSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../../redux/store';
 
 export default function InitialPage() {
 	const dispatch = useDispatch();
-	const { currentUser } = useSelector((state: RootState) => state.user);
 	return (
 		<main className="mx-auto flex min-h-screen max-w-lg items-center justify-center">
 			<div className="flex h-full flex-col justify-center p-4 xl:flex-row xl:items-center xl:gap-10">

@@ -1,6 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-export type ModalType = 'login' | 'register' | 'firstNameLastName' | 'verify' | 'updateUser';
+export type ModalType =
+	| 'login'
+	| 'register'
+	| 'firstNameLastName'
+	| 'verify'
+	| 'updateUser'
+	| 'createClass';
 
 // Define a type for the slice state
 interface ModalState {

@@ -12,7 +12,7 @@ import {
 } from 'ui/components/ui/dialog';
 import { Input } from 'ui/components/ui/input';
 import { Button } from 'ui/components/ui/button';
-import { RadioGroup, RadioGroupItem } from 'ui/components/ui/radio-group';
+import { FormDescription } from 'ui/components/ui/form';
 import {
 	Form,
 	FormControl,
@@ -26,42 +26,62 @@ import { RootState } from '../../../redux/store';
 import { onClose } from '../../../redux/slices/modalSlice';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { formSchema } from './firstNameLastName-schema';
+import { ChangeEvent, useState } from 'react';
+import { formSchema } from './update-user-schema';
 import React from 'react';
 import { signInSuccess } from '../../../redux/slices/userSlice';
 import { updateUser } from '../../../api/actions/user/user.queries';
 
 type ErrorType = { response: { data: { msg: string } } };
 
-export const FirstNameLastNameModal = () => {
+export const UpdateUserModal = () => {
 	const router = useRouter();
-	const queryClient = useQueryClient();
 	const { isOpen, type } = useSelector((state: RootState) => state.modal);
 	const { currentUser } = useSelector((state: RootState) => state.user);
 	const dispatch = useDispatch();
-	const isModalOpen = isOpen && type === 'firstNameLastName';
+	const isModalOpen = isOpen && type === 'updateUser';
 	const [formError, setFormError] = useState<ErrorType>({ response: { data: { msg: '' } } });
+	const [preview, setPreview] = useState<string | undefined>('');
+
+	async function getImageData(event: ChangeEvent<HTMLInputElement>) {
+		const dataTransfer = new DataTransfer();
+
+		Array.from(event.target.files!).forEach(image => dataTransfer.items.add(image));
+		const file = dataTransfer.files[0];
+
+		if (typeof file === 'undefined') return;
+
+		const formData = new FormData();
+		formData.append('file', file);
+		formData.append('upload_preset', 'school-journal');
+		formData.append('api_key', process.env.API_KEY);
+
+		const results = await fetch('https://api.cloudinary.com/v1_1/dedatowvi/image/upload', {
+			method: 'POST',
+			body: formData,
+		}).then(r => r.json());
+
+		setPreview(results.secure_url);
+	}
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			firstName: '',
 			lastName: '',
-			type: 'student',
+			circle_image: '',
 		},
 	});
 
-	const isLoading = form.formState.isSubmitting;
-
 	const { status, error, mutate } = useMutation({
 		mutationFn: updateUser,
-		mutationKey: ['firstNamelastName'],
+		mutationKey: ['updateUser'],
 		onSuccess: ({ data }) => {
 			form.reset();
 			dispatch(signInSuccess(data.updatedUser));
 			dispatch(onClose());
 			setFormError({ response: { data: { msg: '' } } });
+			setPreview('');
 		},
 		onError: (data: ErrorType) => {
 			setFormError(data);
@@ -73,20 +93,21 @@ export const FirstNameLastNameModal = () => {
 		form.reset();
 		router.refresh();
 		dispatch(onClose());
+		setPreview('');
 	};
 
-	const onSubmit = ({
-		firstName,
-		lastName,
-		type,
-	}: {
-		firstName: string;
-		lastName: string;
-		type: 'student' | 'teacher';
-	}) => {
+	const onSubmit = ({ firstName, lastName }: { firstName: string; lastName: string }) => {
 		try {
-			mutate({ firstName, lastName, email: currentUser?.email, type });
-			router.refresh();
+			const dataToUpdate: any = {};
+			if (firstName) dataToUpdate.firstName = firstName;
+			if (lastName) dataToUpdate.lastName = lastName;
+			if (currentUser?.email) dataToUpdate.email = currentUser.email;
+			if (preview) dataToUpdate.imageUrl = preview;
+
+			if (Object.keys(dataToUpdate).length > 0) {
+				mutate(dataToUpdate);
+				router.refresh();
+			}
 		} catch (error) {
 			console.log(error);
 		}
@@ -97,7 +118,7 @@ export const FirstNameLastNameModal = () => {
 			<DialogContent className="overflow-hidden bg-white p-0 text-black dark:bg-gray-900 dark:text-white">
 				<DialogHeader className="px-6 pt-8 dark:bg-gray-900">
 					<DialogTitle className="text-center text-2xl font-bold dark:bg-gray-900 dark:text-white">
-						Enter your full name
+						Update your account
 					</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
@@ -114,7 +135,7 @@ export const FirstNameLastNameModal = () => {
 										<FormControl>
 											<Input
 												className="border-0 bg-zinc-300/50 text-black focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-white"
-												placeholder="Enter your first name"
+												placeholder={currentUser.firstName}
 												{...field}
 												type="text"
 												disabled={status === 'pending'}
@@ -135,7 +156,7 @@ export const FirstNameLastNameModal = () => {
 										<FormControl>
 											<Input
 												className="border-0 bg-zinc-300/50 text-black focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-white"
-												placeholder="Enter your last name"
+												placeholder={currentUser.lastName}
 												{...field}
 												type="text"
 											/>
@@ -146,36 +167,33 @@ export const FirstNameLastNameModal = () => {
 							/>
 							<FormField
 								control={form.control}
-								name="type"
-								render={({ field }) => (
-									<FormItem className="space-y-3">
-										<FormLabel className="text-xs font-bold uppercase text-zinc-500 dark:text-secondary/70 dark:text-white">
-											Who are you?
-										</FormLabel>
-
-										<FormControl>
-											<RadioGroup
-												onValueChange={field.onChange}
-												defaultValue={field.value}
-												className="flex flex-col space-y-1"
-												disabled={status === 'pending'}
-											>
-												<FormItem className="flex items-center space-x-3 space-y-0">
-													<FormControl>
-														<RadioGroupItem value="student" />
-													</FormControl>
-													<FormLabel className="font-normal">Student</FormLabel>
-												</FormItem>
-												<FormItem className="flex items-center space-x-3 space-y-0">
-													<FormControl>
-														<RadioGroupItem value="teacher" />
-													</FormControl>
-													<FormLabel className="font-normal">Teacher</FormLabel>
-												</FormItem>
-											</RadioGroup>
-										</FormControl>
-										<FormMessage className="dark:text-red-400" />
-									</FormItem>
+								name="circle_image"
+								render={({ field: { onChange, value, ...rest } }) => (
+									<>
+										<FormItem>
+											<FormLabel>Circle Image</FormLabel>
+											{preview && (
+												<img
+													className="h-20 w-20 rounded-full border-[1px] border-violet-600"
+													src={preview}
+												/>
+											)}
+											<FormControl>
+												<Input
+													type="file"
+													accept="image/png, image/jpg"
+													{...rest}
+													onChange={event => {
+														getImageData(event);
+													}}
+												/>
+											</FormControl>
+											<FormDescription>
+												Choose best image that bring spirits to your circle.
+											</FormDescription>
+											<FormMessage />
+										</FormItem>
+									</>
 								)}
 							/>
 							{formError.response.data.msg && (
