@@ -3,8 +3,13 @@ import modalSlice from './slices/modalSlice';
 import { persistStore, persistReducer } from 'redux-persist';
 import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
 import userSlice from './slices/userSlice';
+import chatSlice from './slices/chatSlice';
 
-const rootReducer = combineReducers({ modal: modalSlice, user: userSlice });
+const rootReducer = combineReducers({
+	modal: modalSlice,
+	user: userSlice,
+	chat: chatSlice,
+});
 
 const createNoopStorage = () => {
 	return {

@@ -5,7 +5,7 @@ import { RootState } from '../../../redux/store';
 import { onClose, onOpen } from '../../../redux/slices/modalSlice';
 import { useEffect } from 'react';
 import Welcome from './_components/welcome';
-import AvailableClasses from './_components/student/available-classes';
+import { AvailableClasses } from './_components/student/available-classes';
 import { CreateYourClass } from './_components/teacher/create-your-class';
 
 const HomePage = () => {

@@ -1,29 +1,22 @@
 'use client';
-import Image from 'next/image';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store';
 import { Button } from 'ui';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from 'ui/components/ui/hover-card';
-
 import { Avatar, AvatarImage } from 'ui/components/ui/avatar';
 import { onOpen } from '../../../redux/slices/modalSlice';
-
 import { PiNumberSquareFiveBold } from 'react-icons/pi';
 import { FaRegCalendar } from 'react-icons/fa';
 import { LuTrophy } from 'react-icons/lu';
 import { FaRegMessage } from 'react-icons/fa6';
 import { PiExam } from 'react-icons/pi';
-import Link from 'next/link';
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from '../../../../../packages/ui/components/ui/tooltip';
-import { cn } from 'ui/lib/utils';
 import { toast } from 'sonner';
+import { cn } from 'ui/lib/utils';
+import Link from 'next/link';
+import { FaHome } from 'react-icons/fa';
 
 const navigationItems = [
+	{ name: 'Home', link: '/home', icon: <FaHome /> },
 	{ name: 'Grades', link: '/grades', icon: <PiNumberSquareFiveBold /> },
 	{ name: 'Frequency', link: '/frequency', icon: <FaRegCalendar /> },
 	{ name: 'Achievements', link: '/achievements', icon: <LuTrophy /> },
@@ -74,11 +67,24 @@ export const NavbarMobile = () => {
 					</HoverCardContent>
 				</HoverCard>
 			</div>
-			<div className="fixed bottom-0 left-0 flex w-screen justify-center bg-white">
-				<ul className="flex w-full gap-4 rounded-2xl border-[1px] p-5">
+			<div className="fixed bottom-0 left-0 flex w-screen justify-center bg-white dark:bg-transparent">
+				<ul className="flex w-full gap-4 rounded-2xl border-[1px] p-5 dark:bg-black">
 					{navigationItems.map((item, index) => (
-						<li key={index} className="flex w-full flex-col justify-center ">
-							{/* <Link onClick={()=>{if(!currentUser?.class) toast.error('First you have to join to the class.')}} aria-disabled={!currentUser?.class} className={cn('flex flex-col justify-center items-center text-xl hover:text-violet-600 transition-all')} href={currentUser?.class ?item.link : '/'}>{item.icon} <span className="text-xs hidden sm:block">{item.name}</span></Link> */}
+						<li
+							key={index}
+							className="flex w-full cursor-pointer flex-col justify-center dark:text-white"
+						>
+							{/* <Link
+								onClick={() => {
+									if (!currentUser?.class) toast.error('First you have to join to the class.');
+								}}
+								className={cn(
+									'flex flex-col items-center justify-center text-xl transition-all hover:text-violet-600',
+								)}
+								href={currentUser?.class ? item.link : '/'}
+							>
+								{item.icon}
+							</Link> */}
 						</li>
 					))}
 				</ul>

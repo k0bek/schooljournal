@@ -30,8 +30,27 @@ model User {
   verified         Boolean    @default(false)
   authType         AuthType
   tokens           Token[]
-  formTeacherClass Class[]    @relation("formTeacher")
-  class            Class      @relation("student", onDelete: NoAction, onUpdate: NoAction, fields: [id], references: [id])
+  teacher Teacher?
+  student Student?
+  messagesInitiated Message[] @relation("MemberOne")
+  messagesReceived Message[] @relation("MemberTwo")
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+}
+
+model Teacher {
+  id               String   @id @default(uuid()) @map("_id")
+  user             User @relation(fields: [userId], references: [id])
+  userId           String @unique
+  createdClass Class[]
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+}
+model Student {
+  id               String     @id @default(uuid()) @map("_id")
+  user User @relation(fields: [userId], references: [id])
+  userId           String @unique
+  class Class @relation(fields: [userId], references: [id])
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
 }
@@ -47,13 +66,24 @@ model Token {
 }
 
 model Class {
-  id               String   @id @default(uuid()) @map("_id")
-  className        String   @unique
+  id               String     @id @default(uuid()) @map("_id")
+  className        String     @unique
   numberOfStudents Int
   subjects         String[]
-  formTeacherId    String   
-  formTeacher      User     @relation("formTeacher", fields: [formTeacherId], references: [id])
-  students         User[]   @relation("student")
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  formTeacherId String
+  formTeacher Teacher @relation(fields: [formTeacherId], references: [userId])
+  students Student[]
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+}
+
+model Message{
+  id               String     @id @default(uuid()) @map("_id")
+  text String
+  memberOneId String
+  memberOne User @relation("MemberOne", fields: [memberOneId], references: [id])
+  memberTwoId String
+  memberTwo User @relation("MemberTwo", fields: [memberTwoId], references: [id])
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
 }

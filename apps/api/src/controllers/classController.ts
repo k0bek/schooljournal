@@ -19,7 +19,7 @@ export const createClass = async (req: AuthenticatedRequest, res: Response) => {
 			className,
 			numberOfStudents,
 			subjects,
-			formTeacherId: req?.user?.id as string,
+			formTeacherId: req.user?.id as string,
 		},
 	});
 	res.status(StatusCodes.CREATED).json({ createdClass });
@@ -28,7 +28,11 @@ export const createClass = async (req: AuthenticatedRequest, res: Response) => {
 export const getClasses = async (req: AuthenticatedRequest, res: Response) => {
 	const classes = await db.class.findMany({
 		include: {
-			formTeacher: true,
+			formTeacher: {
+				include: {
+					user: true,
+				},
+			},
 			students: true,
 		},
 	});

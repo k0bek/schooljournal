@@ -5,7 +5,7 @@ import { RegisterModal } from '../components/modals/register-modal/register-moda
 import { LoginModal } from '../components/modals/login-modal/login-modal';
 import { FirstNameLastNameModal } from '../components/modals/firstNameLastName-modal/first-name-last-name-modal';
 import { VerifyModal } from '../components/modals/verify-modal/verify-modal';
-import { UpdateUserModal } from '../components/modals/updateUser-modal/update-user-modal';
+import { UpdateUserModal } from '../components/modals/update-user-modal/update-user-modal';
 import { CreateClassModal } from '../components/modals/create-class-modal/create-class-modal';
 
 const ModalProvider = () => {

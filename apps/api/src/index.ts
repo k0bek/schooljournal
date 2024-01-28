@@ -14,14 +14,16 @@ import userRouter from './routes/userRoutes';
 import classRouter from './routes/classRoutes';
 import errorHandlerMiddleware from './middleware/errorHandlerMiddleware';
 import { notFound } from './middleware/notFound';
-
+import { createServer } from 'http';
+import { socket } from './socket/chat/chat';
 const app = express();
+export const httpServer = createServer(app);
 
 const limiter: RateLimitRequestHandler = rateLimit({
-	windowMs: 15 * 60 * 1000, // 15 minutes
-	limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
-	standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
-	legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+	windowMs: 15 * 60 * 1000,
+	limit: 100,
+	standardHeaders: 'draft-7',
+	legacyHeaders: false,
 });
 app.set('trust proxy', 1);
 app.use(morgan('tiny'));
@@ -40,12 +42,13 @@ app.use('/api/v1/class', classRouter);
 app.use(notFound);
 app.use(errorHandlerMiddleware);
 
-const port: string | 5001 = process.env['PORT'] || 5001;
+const port: string | number = process.env.PORT || 5001;
 
 const start = async () => {
 	try {
 		await connectDB(process.env.MONGO_URL as string);
-		app.listen(port, () => console.log(`Server is listening on port ${port}...`));
+		socket(httpServer);
+		httpServer.listen(port, () => console.log(`Server is listening on port ${port}...`));
 	} catch (error) {
 		console.log(error);
 	}

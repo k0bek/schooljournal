@@ -4,16 +4,13 @@ import { useQuery } from '@tanstack/react-query';
 import { AvailableClassesCard } from './available-classes-card';
 import { getClasses } from '../../../../../api/actions/class/class.queries';
 
-const AvailableClasses = () => {
+export const AvailableClasses = () => {
 	const { data, error, isFetched } = useQuery({
 		queryKey: ['classes'],
 		queryFn: getClasses,
 	});
 	const classes = data?.classes;
 
-	console.log(classes);
-
-	console.log(classes);
 	return (
 		<section>
 			<h2 className="mt-5 text-2xl font-extralight text-violet-600 lg:mt-10 lg:text-4xl">
@@ -23,10 +20,11 @@ const AvailableClasses = () => {
 				{classes?.map((classItem, index) => (
 					<AvailableClassesCard
 						key={index}
-						className={classItem.classname}
+						className={classItem.className}
 						numberOfStudents={classItem.numberOfStudents}
-						formTeacherFirstName={classItem.formTeacher.firstName}
-						formTeacherLastName={classItem.formTeacher.lastName}
+						formTeacherFirstName={classItem.formTeacher.user.firstName}
+						formTeacherLastName={classItem.formTeacher.user.lastName}
+						subjects={classItem.subjects}
 						students={classItem.students}
 					/>
 				))}
@@ -34,5 +32,3 @@ const AvailableClasses = () => {
 		</section>
 	);
 };
-
-export default AvailableClasses;

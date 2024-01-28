@@ -19,7 +19,14 @@ export const authenticateUser = async (
 		if (accessToken) {
 			// @ts-ignore
 			const { user } = await isTokenValid(accessToken);
-			const updatedUser = await db.user.findUnique({ where: { email: user.email } });
+			const updatedUser = await db.user.findUnique({
+				where: { email: user.email },
+				include: {
+					teacher: { include: { createdClass: true } },
+					student: { include: { user: true } },
+				},
+			});
+
 			// @ts-ignore
 			req.user = updatedUser;
 

@@ -65,6 +65,9 @@ export const google = async (req: Request, res: Response) => {
 				authType: 'google',
 				verified: true,
 			},
+			include: {
+				teacher: true,
+			},
 		});
 
 		const token = createJWT({ payload: { user } });
@@ -111,21 +114,27 @@ export const register = async (req: Request, res: Response) => {
 			type,
 			authType: 'register',
 		},
-		select: {
-			id: true,
-			username: true,
-			email: true,
-			firstName: true,
-			lastName: true,
-			password: true,
-			imageUrl: true,
-			type: true,
-			authType: true,
-			verified: true,
-			createdAt: true,
-			updatedAt: true,
+		include: {
+			teacher: true,
 		},
 	});
+
+	let createdUser;
+	if (type === 'teacher') {
+		createdUser = await db.teacher.create({
+			data: {
+				userId: user.id,
+			},
+		});
+	}
+
+	if (type === 'student') {
+		createdUser = await db.student.create({
+			data: {
+				userId: user.id,
+			},
+		});
+	}
 
 	const token = createJWT({ payload: { user } });
 	await db.token.create({
@@ -142,6 +151,7 @@ export const register = async (req: Request, res: Response) => {
 		token,
 		user,
 		msg: 'Please confirm your email to complete the registration process and start enjoying our services.',
+		createdUser,
 	});
 };
 

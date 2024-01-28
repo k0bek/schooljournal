@@ -143,40 +143,42 @@ export const FirstNameLastNameModal = () => {
 									</FormItem>
 								)}
 							/>
-							<FormField
-								control={form.control}
-								name="type"
-								render={({ field }) => (
-									<FormItem className="space-y-3">
-										<FormLabel className="text-xs font-bold uppercase text-zinc-500 dark:text-secondary/70 dark:text-white">
-											Who are you?
-										</FormLabel>
+							{currentUser.authType === 'google' && (
+								<FormField
+									control={form.control}
+									name="type"
+									render={({ field }) => (
+										<FormItem className="space-y-3">
+											<FormLabel className="text-xs font-bold uppercase text-zinc-500 dark:text-secondary/70 dark:text-white">
+												Who are you?
+											</FormLabel>
 
-										<FormControl>
-											<RadioGroup
-												onValueChange={field.onChange}
-												defaultValue={field.value}
-												className="flex flex-col space-y-1"
-												disabled={status === 'pending'}
-											>
-												<FormItem className="flex items-center space-x-3 space-y-0">
-													<FormControl>
-														<RadioGroupItem value="student" />
-													</FormControl>
-													<FormLabel className="font-normal">Student</FormLabel>
-												</FormItem>
-												<FormItem className="flex items-center space-x-3 space-y-0">
-													<FormControl>
-														<RadioGroupItem value="teacher" />
-													</FormControl>
-													<FormLabel className="font-normal">Teacher</FormLabel>
-												</FormItem>
-											</RadioGroup>
-										</FormControl>
-										<FormMessage className="dark:text-red-400" />
-									</FormItem>
-								)}
-							/>
+											<FormControl>
+												<RadioGroup
+													onValueChange={field.onChange}
+													defaultValue={field.value}
+													className="flex flex-col space-y-1"
+													disabled={status === 'pending'}
+												>
+													<FormItem className="flex items-center space-x-3 space-y-0">
+														<FormControl>
+															<RadioGroupItem value="student" />
+														</FormControl>
+														<FormLabel className="font-normal">Student</FormLabel>
+													</FormItem>
+													<FormItem className="flex items-center space-x-3 space-y-0">
+														<FormControl>
+															<RadioGroupItem value="teacher" />
+														</FormControl>
+														<FormLabel className="font-normal">Teacher</FormLabel>
+													</FormItem>
+												</RadioGroup>
+											</FormControl>
+											<FormMessage className="dark:text-red-400" />
+										</FormItem>
+									)}
+								/>
+							)}
 							{formError.response.data.msg && (
 								<div className="text-md rounded-lg bg-red-400 py-2 text-center text-white">
 									{formError?.response?.data?.msg}

@@ -86,8 +86,6 @@ export const CreateClassModal = () => {
 		},
 	});
 
-	console.log(error);
-
 	const onSubmit = ({
 		className,
 		numberOfStudents,

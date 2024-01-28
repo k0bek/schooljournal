@@ -9,7 +9,7 @@ interface AuthenticatedRequest extends Request {
 }
 
 export const updateUser = async (req: Request, res: Response) => {
-	const { email } = req.body;
+	const { email, type } = req.body;
 	const user = await db.user.findUnique({ where: { email } });
 	if (user) {
 		const updatedUser = await db.user.update({
@@ -19,8 +19,28 @@ export const updateUser = async (req: Request, res: Response) => {
 			data: {
 				...req.body,
 			},
+			include: {
+				teacher: true,
+			},
 		});
-		res.status(StatusCodes.CREATED).json({ updatedUser });
+		let createdUser;
+		if (type === 'teacher') {
+			createdUser = await db.teacher.create({
+				data: {
+					userId: user.id,
+				},
+			});
+		}
+
+		if (type === 'student') {
+			createdUser = await db.student.create({
+				data: {
+					userId: user.id,
+				},
+			});
+		}
+
+		res.status(StatusCodes.CREATED).json({ updatedUser, createdUser });
 	} else {
 		throw new UnauthenticatedError('There is no user with this email.');
 	}
@@ -28,4 +48,9 @@ export const updateUser = async (req: Request, res: Response) => {
 
 export const showCurrentUser = async (req: AuthenticatedRequest, res: Response) => {
 	return res.status(StatusCodes.OK).json({ user: req.user });
+};
+
+export const getAllUsers = async (req: AuthenticatedRequest, res: Response) => {
+	const users = await db.user.findMany({});
+	return res.status(StatusCodes.OK).json({ users });
 };

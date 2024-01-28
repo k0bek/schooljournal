@@ -15,3 +15,11 @@ export const updateUser = async user => {
 		throw error;
 	}
 };
+
+export const getAllUsers = async () => {
+	try {
+		return (await axios.get('/api/v1/user/allUsers')).data;
+	} catch (error) {
+		throw error;
+	}
+};

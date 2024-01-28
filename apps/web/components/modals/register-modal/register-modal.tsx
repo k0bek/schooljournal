@@ -65,8 +65,6 @@ export const RegisterModal = () => {
 		},
 	});
 
-	console.log(error);
-
 	const handleClose = () => {
 		setFormError({ response: { data: { msg: '' } } });
 		form.reset();

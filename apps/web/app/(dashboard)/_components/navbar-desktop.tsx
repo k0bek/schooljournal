@@ -15,8 +15,12 @@ import { IoIosJournal } from 'react-icons/io';
 import { ImProfile } from 'react-icons/im';
 import SquigglyLines from './../../../public/_static/svg/squigily-lines';
 import { toast } from 'sonner';
+import { usePathname } from 'next/navigation';
+import { cn } from '../../../utils';
+import { FaHome } from 'react-icons/fa';
 
 const navigationItems = [
+	{ name: 'Home', link: '/home', icon: <FaHome /> },
 	{ name: 'Grades', link: '/grades', icon: <PiNumberSquareFiveBold /> },
 	{ name: 'Frequency', link: '/frequency', icon: <FaRegCalendar /> },
 	{ name: 'Achievements', link: '/achievements', icon: <LuTrophy /> },
@@ -27,6 +31,8 @@ const navigationItems = [
 export const NavbarDesktop = () => {
 	const dispatch = useDispatch();
 	const { currentUser } = useSelector((state: RootState) => state.user);
+	const pathname = usePathname();
+	const pathnames = pathname.split(' ');
 
 	return (
 		<nav className="fixed hidden h-screen w-full flex-col items-center border-r-[1px] border-gray-300 p-5 lg:flex lg:w-60 dark:bg-transparent">
@@ -59,9 +65,26 @@ export const NavbarDesktop = () => {
 					{navigationItems.map((item, index) => (
 						<li
 							key={index}
-							className="w-full rounded-2xl px-3 py-2 transition-all hover:bg-violet-100 hover:text-violet-600"
+							className={cn(
+								'w-full rounded-2xl px-3 py-2 transition-all hover:bg-violet-100 hover:text-violet-600',
+								pathnames.includes(item.link) ? 'bg-violet-100 text-violet-600' : '',
+							)}
 						>
-							{/* <Link onClick={()=>{if(!currentUser?.class &&currentUser?.type==='student') toast.error('First you have to join to the class.')}} className="w-full text-md font-semibold flex items-center gap-2" href={currentUser?.class &&currentUser.type==='student' || currentUser.type==='teacher' ?item.link : '/'}>{item.icon} {item.name}</Link> */}
+							{/* <Link
+								onClick={() => {
+									if (currentUser?.class && currentUser?.type === 'student')
+										toast.error('First you have to join to the class.');
+								}}
+								className="text-md flex w-full items-center gap-2 font-semibold"
+								href={
+									(!currentUser?.class && currentUser?.type === 'student') ||
+									currentUser?.type === 'teacher'
+										? item.link
+										: '/'
+								}
+							>
+								{item.icon} {item.name}
+							</Link> */}
 						</li>
 					))}
 				</ul>

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export const protectedRoutes = ['/home'];
+export const protectedRoutes = ['/home', '/messages'];
 export const authRoutes = ['/'];
 
 export function middleware(request: NextRequest) {
