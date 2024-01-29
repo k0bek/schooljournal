@@ -9,8 +9,9 @@ interface ConnectedUsers {
 export const socket = (server: http.Server | https.Server) => {
 	const io = new Server(server, {
 		cors: {
-			origin: process.env.BASE_URL,
+			origin: '*',
 			credentials: true,
+			methods: ['GET', 'POST'],
 		},
 	});
 

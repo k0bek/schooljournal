@@ -12,12 +12,11 @@ import { useEffect, useState } from 'react';
 import { Socket } from 'socket.io-client';
 
 interface AvailableUsersProps {
-	setMemberTwoId: React.Dispatch<React.SetStateAction<string>>;
 	setIsChatOpen: React.Dispatch<React.SetStateAction<boolean>>;
 	socket: Socket;
 }
 
-export const AvailableUsers = ({ setMemberTwoId, setIsChatOpen, socket }: AvailableUsersProps) => {
+export const AvailableUsers = ({ setIsChatOpen, socket }: AvailableUsersProps) => {
 	const dispatch = useDispatch();
 	const { data } = useQuery({
 		queryKey: ['users'],
@@ -34,7 +33,6 @@ export const AvailableUsers = ({ setMemberTwoId, setIsChatOpen, socket }: Availa
 	const [availableUsers, setAvailableUsers] = useState([]);
 
 	const handleOpenChat = (userId: string, user) => {
-		setMemberTwoId(userId);
 		setIsChatOpen(true);
 		dispatch(assignMemberTwo(user));
 	};

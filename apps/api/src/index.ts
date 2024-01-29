@@ -12,6 +12,7 @@ import { connectDB } from './db/connectToDatabase';
 import authRouter from './routes/authRoutes';
 import userRouter from './routes/userRoutes';
 import classRouter from './routes/classRoutes';
+import messageRouter from './routes/messageRoutes';
 import errorHandlerMiddleware from './middleware/errorHandlerMiddleware';
 import { notFound } from './middleware/notFound';
 import { createServer } from 'http';
@@ -38,6 +39,7 @@ app.use(cookieParser(process.env.JWT_SECRET));
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/class', classRouter);
+app.use('/api/v1/message', messageRouter);
 
 app.use(notFound);
 app.use(errorHandlerMiddleware);

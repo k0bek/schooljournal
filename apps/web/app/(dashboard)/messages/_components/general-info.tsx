@@ -1,5 +1,4 @@
 import { AvatarImage, Avatar } from 'ui/components/ui/avatar';
-import { User } from '@prisma/client';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../redux/store';

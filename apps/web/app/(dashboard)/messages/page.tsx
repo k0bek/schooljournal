@@ -8,12 +8,10 @@ import { onClose, onOpen } from '../../../redux/slices/modalSlice';
 import { Chat } from './_components/chat/chat';
 import { GeneralInfo } from './_components/general-info';
 import { io } from 'socket.io-client';
-const socket = io(process.env.BASE_URL_BACKEND);
+const socket = io('http://localhost:5001/');
 
 const MessagePage = () => {
 	const [isChatOpen, setIsChatOpen] = useState(false);
-	const [memberTwoId, setMemberTwoId] = useState(undefined);
-	const [memberTwo, setMemberTwo] = useState(undefined);
 	const { currentUser } = useSelector((state: RootState) => state.user);
 	const dispatch = useDispatch();
 
@@ -28,14 +26,10 @@ const MessagePage = () => {
 
 	return (
 		<main className="w-full px-5 pb-20 lg:ml-64 lg:flex lg:gap-12 lg:py-5">
-			<AvailableUsers
-				setMemberTwoId={setMemberTwoId}
-				setIsChatOpen={setIsChatOpen}
-				socket={socket}
-			/>
+			<AvailableUsers setIsChatOpen={setIsChatOpen} socket={socket} />
 			{isChatOpen && (
 				<>
-					<Chat memberTwoId={memberTwoId} setMemberTwo={setMemberTwo} socket={socket} />
+					<Chat socket={socket} />
 					<GeneralInfo />
 				</>
 			)}

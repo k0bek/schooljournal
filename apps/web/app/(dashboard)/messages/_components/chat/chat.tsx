@@ -13,23 +13,20 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import { RootState } from '../../../../../redux/store';
 import { useSelector } from 'react-redux';
-import { User } from '@prisma/client';
 import { Socket } from 'socket.io-client';
 import Lottie from 'lottie-react';
 import animationData from './../../../../../public/animations/loading.json';
 import { Avatar, AvatarImage } from 'ui/components/ui/avatar';
 
 interface ChatProps {
-	memberTwoId: string;
-	setMemberTwo: React.Dispatch<React.SetStateAction<User>>;
 	socket: Socket;
 }
 
-export const Chat = ({ memberTwoId, setMemberTwo, socket }: ChatProps) => {
+export const Chat = ({ socket }: ChatProps) => {
 	const [messsageValue, setMessageValue] = useState('');
 	const { currentUser } = useSelector((state: RootState) => state.user);
 	const { memberTwo } = useSelector((state: RootState) => state.chat);
-	const { status, error, mutate, data } = useMutation({
+	const { mutate } = useMutation({
 		mutationFn: createMessage,
 		mutationKey: ['messages'],
 	});
@@ -40,21 +37,17 @@ export const Chat = ({ memberTwoId, setMemberTwo, socket }: ChatProps) => {
 		id: '',
 	});
 
-	const {
-		data: dataMessages,
-		error: errorMessage,
-		isFetched: isFetchedMessage,
-	} = useQuery({
+	const { data: dataMessage, refetch: refetchMessage } = useQuery({
 		queryKey: ['messages'],
 		queryFn: getAllMessages,
 	});
 
 	const handleSendMessage = () => {
-		mutate({ memberTwoId, message: messsageValue });
+		mutate({ memberTwoId: memberTwo.id, message: messsageValue });
 		if (messsageValue.trim()) {
 			socket.emit('message', {
 				text: messsageValue,
-				memberTwoId,
+				memberTwoId: memberTwo.id,
 				memberOneId: currentUser.id,
 				createdAt: new Date(),
 			});
@@ -71,10 +64,11 @@ export const Chat = ({ memberTwoId, setMemberTwo, socket }: ChatProps) => {
 	};
 
 	useEffect(() => {
-		setMessages(dataMessages?.messages);
-	}, [dataMessages]);
+		setMessages(dataMessage?.messages);
+	}, [dataMessage]);
 
 	useEffect(() => {
+		refetchMessage();
 		const handleReceivedMessage = data => {
 			setMessages(prev => [...prev, data]);
 		};
@@ -88,7 +82,7 @@ export const Chat = ({ memberTwoId, setMemberTwo, socket }: ChatProps) => {
 
 	useEffect(() => {
 		lastMessageRef.current?.scrollIntoView({ behavior: 'smooth' });
-	}, [dataMessages]);
+	}, [dataMessage]);
 
 	useEffect(() => {
 		lastMessageRef.current.scrollTop = lastMessageRef.current.scrollHeight;
