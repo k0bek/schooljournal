@@ -19,6 +19,8 @@ export const socket = (server: http.Server | https.Server) => {
 	io.on('connection', socket => {
 		console.log(`⚡: ${socket.id} user just connected!`);
 
+		//messages
+
 		socket.on('message', data => {
 			io.emit('messageResponse', data);
 		});
@@ -30,6 +32,16 @@ export const socket = (server: http.Server | https.Server) => {
 
 		socket.on('typing', data => {
 			socket.broadcast.emit('typingResponse', data);
+		});
+
+		//notifications
+
+		socket.on('initalNotification', data => {
+			io.emit('initialNotificationResponse', data);
+		});
+
+		socket.on('chatNotification', data => {
+			io.emit('chatNotificationResponse', data);
 		});
 
 		socket.on('disconnect', () => {

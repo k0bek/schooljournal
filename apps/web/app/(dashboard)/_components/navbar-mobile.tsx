@@ -5,28 +5,22 @@ import { Button } from 'ui';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from 'ui/components/ui/hover-card';
 import { Avatar, AvatarImage } from 'ui/components/ui/avatar';
 import { onOpen } from '../../../redux/slices/modalSlice';
-import { PiNumberSquareFiveBold } from 'react-icons/pi';
-import { FaRegCalendar } from 'react-icons/fa';
-import { LuTrophy } from 'react-icons/lu';
-import { FaRegMessage } from 'react-icons/fa6';
-import { PiExam } from 'react-icons/pi';
 import { toast } from 'sonner';
 import { cn } from 'ui/lib/utils';
 import Link from 'next/link';
-import { FaHome } from 'react-icons/fa';
-
-const navigationItems = [
-	{ name: 'Home', link: '/home', icon: <FaHome /> },
-	{ name: 'Grades', link: '/grades', icon: <PiNumberSquareFiveBold /> },
-	{ name: 'Frequency', link: '/frequency', icon: <FaRegCalendar /> },
-	{ name: 'Achievements', link: '/achievements', icon: <LuTrophy /> },
-	{ name: 'Messages', link: '/messages', icon: <FaRegMessage /> },
-	{ name: 'Tests', link: '/tests', icon: <PiExam /> },
-];
+import { navigationItems } from '../../../utils/constants/navigation-items';
+import { useQuery } from '@tanstack/react-query';
+import { showCurrentStudent } from '../../../api/actions/user/user.queries';
 
 export const NavbarMobile = () => {
 	const dispatch = useDispatch();
 	const { currentUser } = useSelector((state: RootState) => state.user);
+
+	const { data } = useQuery({
+		queryKey: ['currentStudent'],
+		queryFn: showCurrentStudent,
+	});
+	const currentStudent = data?.currentStudent;
 
 	return (
 		<nav className="flex justify-between p-5 lg:hidden">
@@ -48,7 +42,7 @@ export const NavbarMobile = () => {
 									{currentUser?.firstName} {currentUser?.lastName}
 								</p>
 								<span className="-mt-1 cursor-pointer text-sm text-gray-500">
-									{/* {currentUser?.classe ? currentUser?.class : '-'} */}
+									{currentStudent?.class ? currentStudent?.class?.className : '-'}
 								</span>
 							</div>
 						</div>
@@ -74,17 +68,17 @@ export const NavbarMobile = () => {
 							key={index}
 							className="flex w-full cursor-pointer flex-col justify-center dark:text-white"
 						>
-							{/* <Link
+							<Link
 								onClick={() => {
-									if (!currentUser?.class) toast.error('First you have to join to the class.');
+									if (!currentStudent?.classId) toast.error('First you have to join to the class.');
 								}}
 								className={cn(
 									'flex flex-col items-center justify-center text-xl transition-all hover:text-violet-600',
 								)}
-								href={currentUser?.class ? item.link : '/'}
+								href={currentStudent?.classId ? item.link : '/'}
 							>
-								{item.icon}
-							</Link> */}
+								<item.icon />
+							</Link>
 						</li>
 					))}
 				</ul>

@@ -23,7 +23,7 @@ export const authenticateUser = async (
 				where: { email: user.email },
 				include: {
 					teacher: { include: { createdClass: true } },
-					student: { include: { user: true } },
+					student: { include: { user: true, requestedClasses: true } },
 				},
 			});
 

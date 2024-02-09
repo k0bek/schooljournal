@@ -9,12 +9,11 @@ import { onOpen } from '../../../../../redux/slices/modalSlice';
 export const CreateYourClass = () => {
 	const dispatch = useDispatch();
 	return (
-		<section className="flex flex-col items-start">
-			<div className="w-full text-center md:w-1/2">
+		<section className="flex w-1/2 flex-col items-start">
+			<div className="w-full text-center">
 				<h2 className="mt-5 text-3xl font-extralight text-violet-600 md:text-4xl lg:mt-10 lg:text-[2.5rem]">
 					Create your <span className="text-black dark:text-white"> class!</span>
 				</h2>
-				<p className="mt-2">*you can create only one class</p>
 				<div className="w-full">
 					<Lottie className="-mt-6 w-full" animationData={animationData} />
 					<Button

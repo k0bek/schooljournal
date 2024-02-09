@@ -19,7 +19,7 @@ enum AuthType {
 }
 
 model User {
-  id               String     @id @default(uuid()) @map("_id")
+  id               String     @id @default(auto()) @map("_id") @db.ObjectId
   username         String
   firstName        String
   lastName         String
@@ -34,12 +34,15 @@ model User {
   student Student?
   messagesInitiated Message[] @relation("MemberOne")
   messagesReceived Message[] @relation("MemberTwo")
+   notificationsInitiated Notification[] @relation("MemberOne")
+  notificationssReceived Notification[] @relation("MemberTwo")
+  initialized Boolean @default(false)
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
 }
 
 model Teacher {
-  id               String   @id @default(uuid()) @map("_id")
+  id               String     @id @default(auto()) @map("_id") @db.ObjectId
   user             User @relation(fields: [userId], references: [id])
   userId           String @unique
   createdClass Class[]
@@ -47,16 +50,19 @@ model Teacher {
   updatedAt        DateTime   @updatedAt
 }
 model Student {
-  id               String     @id @default(uuid()) @map("_id")
+    id               String     @id @default(auto()) @map("_id") @db.ObjectId
   user User @relation(fields: [userId], references: [id])
   userId           String @unique
-  class Class @relation(fields: [userId], references: [id])
+  classIDs String[]   @db.ObjectId
+  classId String?
+  class Class? @relation("currentClass", fields: [classId], references: [id]) 
+  requestedClasses Class[] @relation("requested",fields: [classIDs], references: [id])
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
 }
 
 model Token {
-  id           String   @id @default(uuid()) @map("_id")
+  id               String     @id @default(auto()) @map("_id") @db.ObjectId
   userId       String
   refreshToken String
   isValid      Boolean
@@ -66,24 +72,39 @@ model Token {
 }
 
 model Class {
-  id               String     @id @default(uuid()) @map("_id")
+  id               String     @id @default(auto()) @map("_id") @db.ObjectId
   className        String     @unique
   numberOfStudents Int
   subjects         String[]
   formTeacherId String
   formTeacher Teacher @relation(fields: [formTeacherId], references: [userId])
-  students Student[]
+  studentIDs String[]   @db.ObjectId
+  requestedStudents Student[] @relation("requested", fields: [studentIDs], references: [id])
+  students Student[] @relation("currentClass")
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
 }
 
 model Message{
-  id               String     @id @default(uuid()) @map("_id")
+  id               String     @id @default(auto()) @map("_id") @db.ObjectId
+  text String
+  memberOneId String
+  memberOne User @relation("MemberOne", fields: [memberOneId], references: [id])
+  memberTwoId String?
+  memberTwo User? @relation("MemberTwo", fields: [memberTwoId], references: [id])
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+}
+
+model Notification{
+  id               String     @id @default(auto()) @map("_id") @db.ObjectId
   text String
   memberOneId String
   memberOne User @relation("MemberOne", fields: [memberOneId], references: [id])
   memberTwoId String
   memberTwo User @relation("MemberTwo", fields: [memberTwoId], references: [id])
-  createdAt        DateTime   @default(now())
+  url String
+  readed Boolean @default(false)
+ createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
 }

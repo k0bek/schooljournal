@@ -23,3 +23,11 @@ export const getAllUsers = async () => {
 		throw error;
 	}
 };
+
+export const showCurrentStudent = async () => {
+	try {
+		return (await axios.get('/api/v1/user/showCurrentStudent')).data;
+	} catch (error) {
+		throw error;
+	}
+};

@@ -11,14 +11,14 @@ import { Button } from 'ui';
 
 const VerifyPage = () => {
 	const { userId, tokenId } = useParams();
-	const { status, error, mutate, data } = useMutation({
+	const { mutate } = useMutation({
 		mutationFn: postVerifyAccount,
 		mutationKey: ['verify'],
 	});
 
 	useEffect(() => {
 		mutate({ userId, tokenId });
-	}, []);
+	});
 
 	return (
 		<div className="flex h-full flex-col items-center justify-center gap-2 text-center">

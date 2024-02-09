@@ -23,3 +23,33 @@ export const getClasses = async () => {
 		throw error;
 	}
 };
+
+export const requestJoinClass = async ({ classId }: { classId: string }) => {
+	try {
+		return await axios.patch('/api/v1/class/requestJoinClass', { classId });
+	} catch (error) {
+		throw error;
+	}
+};
+
+export const getRequestedStudents = async () => {
+	try {
+		return (await axios.get('/api/v1/class/getRequestedStudents')).data;
+	} catch (error) {
+		throw error;
+	}
+};
+
+export const acceptStudent = async ({
+	studentId,
+	classId,
+}: {
+	studentId: string;
+	classId: string;
+}) => {
+	try {
+		return await axios.patch('/api/v1/class/acceptStudent', { studentId, classId });
+	} catch (error) {
+		throw error;
+	}
+};

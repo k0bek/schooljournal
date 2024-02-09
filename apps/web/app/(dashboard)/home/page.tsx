@@ -7,10 +7,19 @@ import { useEffect } from 'react';
 import Welcome from './_components/welcome';
 import { AvailableClasses } from './_components/student/available-classes';
 import { CreateYourClass } from './_components/teacher/create-your-class';
+import { ClassRequests } from './_components/teacher/class-requests';
+import { showCurrentStudent } from '../../../api/actions/user/user.queries';
+import { useQuery } from '@tanstack/react-query';
 
 const HomePage = () => {
-	const { currentUser } = useSelector((state: RootState) => state.user);
 	const dispatch = useDispatch();
+
+	const { currentUser } = useSelector((state: RootState) => state.user);
+	const { data } = useQuery({
+		queryKey: ['currentStudent'],
+		queryFn: showCurrentStudent,
+	});
+	const currentStudent = data?.currentStudent;
 
 	useEffect(() => {
 		if (!currentUser?.firstName || !currentUser?.lastName) {
@@ -25,13 +34,16 @@ const HomePage = () => {
 			{currentUser?.type === 'student' && (
 				<>
 					<Welcome />
-					<AvailableClasses />
+					{!currentStudent?.classId && <AvailableClasses />}
 				</>
 			)}
 			{currentUser?.type === 'teacher' && (
 				<>
 					<Welcome />
-					<CreateYourClass />
+					<div className="flex flex-col">
+						<CreateYourClass />
+						<ClassRequests />
+					</div>
 				</>
 			)}
 		</main>

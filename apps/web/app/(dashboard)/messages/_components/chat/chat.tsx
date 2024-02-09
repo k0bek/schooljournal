@@ -12,24 +12,33 @@ import {
 } from '../../../../../api/actions/messages/messages.queries';
 import { useEffect, useRef, useState } from 'react';
 import { RootState } from '../../../../../redux/store';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Socket } from 'socket.io-client';
 import Lottie from 'lottie-react';
 import animationData from './../../../../../public/animations/loading.json';
 import { Avatar, AvatarImage } from 'ui/components/ui/avatar';
+import { createNotification } from '../../../../../api/actions/notification/notification.queries';
+import { assignChatNotification } from '../../../../../redux/slices/notificationSlice';
 
 interface ChatProps {
 	socket: Socket;
 }
 
 export const Chat = ({ socket }: ChatProps) => {
+	const dispatch = useDispatch();
 	const [messsageValue, setMessageValue] = useState('');
 	const { currentUser } = useSelector((state: RootState) => state.user);
+	const { chatNotification } = useSelector((state: RootState) => state.notification);
 	const { memberTwo } = useSelector((state: RootState) => state.chat);
 	const { mutate } = useMutation({
 		mutationFn: createMessage,
 		mutationKey: ['messages'],
 	});
+	const { mutate: notificationMutate, data: notificationData } = useMutation({
+		mutationFn: createNotification,
+		mutationKey: ['notification'],
+	});
+
 	const [messages, setMessages] = useState([]);
 	const lastMessageRef = useRef(null);
 	const [typingStatus, setTypingStatus] = useState<{ msg: string; id: string }>({
@@ -51,8 +60,12 @@ export const Chat = ({ socket }: ChatProps) => {
 				memberOneId: currentUser.id,
 				createdAt: new Date(),
 			});
+			socket.emit('chatNotification', {
+				text: messsageValue,
+				memberTwoId: memberTwo.id,
+				memberOneId: currentUser.id,
+			});
 		}
-		setMessageValue('');
 		setTypingStatus({ msg: '', id: '' });
 	};
 
@@ -73,10 +86,24 @@ export const Chat = ({ socket }: ChatProps) => {
 			setMessages(prev => [...prev, data]);
 		};
 
+		const handleReceivedNotificationMessage = data => {
+			if (currentUser.id === data.memberTwoId) {
+				dispatch(assignChatNotification(data));
+				notificationMutate({
+					text: 'Someone has already texted you.',
+					memberTwoId: data.memberTwoId,
+					memberOneId: currentUser.id,
+					url: '/messages',
+				});
+			}
+		};
+
 		socket.on('messageResponse', handleReceivedMessage);
+		socket.on('chatNotificationResponse', handleReceivedNotificationMessage);
 
 		return () => {
 			socket.off('messageResponse', handleReceivedMessage);
+			socket.off('hatNotificationResponse', handleReceivedNotificationMessage);
 		};
 	}, [socket]);
 
@@ -103,6 +130,8 @@ export const Chat = ({ socket }: ChatProps) => {
 			clearTimeout(timer);
 		};
 	}, [typingStatus]);
+
+	console.log(chatNotification);
 
 	return (
 		<div className="mt-4 h-full max-h-[50rem] rounded-md border lg:mt-12 lg:flex lg:h-5/6 lg:w-1/2 lg:flex-col lg:justify-between">

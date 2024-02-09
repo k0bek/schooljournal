@@ -5,7 +5,7 @@ import { AvailableClassesCard } from './available-classes-card';
 import { getClasses } from '../../../../../api/actions/class/class.queries';
 
 export const AvailableClasses = () => {
-	const { data, error, isFetched } = useQuery({
+	const { data } = useQuery({
 		queryKey: ['classes'],
 		queryFn: getClasses,
 	});
@@ -26,6 +26,7 @@ export const AvailableClasses = () => {
 						formTeacherLastName={classItem.formTeacher.user.lastName}
 						subjects={classItem.subjects}
 						students={classItem.students}
+						classId={classItem.id}
 					/>
 				))}
 			</div>

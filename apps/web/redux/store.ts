@@ -4,11 +4,15 @@ import { persistStore, persistReducer } from 'redux-persist';
 import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
 import userSlice from './slices/userSlice';
 import chatSlice from './slices/chatSlice';
+import socketSlice from './slices/socketSlice';
+import notificationSlice from './slices/notificationSlice';
 
 const rootReducer = combineReducers({
 	modal: modalSlice,
 	user: userSlice,
 	chat: chatSlice,
+	socket: socketSlice,
+	notification: notificationSlice,
 });
 
 const createNoopStorage = () => {
@@ -30,6 +34,7 @@ const storage = typeof window !== 'undefined' ? createWebStorage('local') : crea
 const persistConfig = {
 	key: 'root',
 	storage,
+	blacklist: ['notification'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

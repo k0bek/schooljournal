@@ -1,7 +1,7 @@
 import { QueryClient } from '@tanstack/react-query';
 import { NavbarDesktop } from './_components/navbar-desktop';
 import { NavbarMobile } from './_components/navbar-mobile';
-import NotificationButton from './_components/notification-button';
+import { NotificationButton } from './_components/notification-button/notification-button';
 import { getClasses } from '../../api/actions/class/class.queries';
 
 const HomeLayout = async ({ children }: { children: React.ReactNode }) => {
@@ -10,6 +10,7 @@ const HomeLayout = async ({ children }: { children: React.ReactNode }) => {
 		queryKey: ['classes'],
 		queryFn: getClasses,
 	});
+
 	return (
 		<div className="lg:flex">
 			<NavbarMobile />

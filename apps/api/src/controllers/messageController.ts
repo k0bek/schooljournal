@@ -55,7 +55,20 @@ export const addMessage = async (req: MessageRequest, res: Response, next: NextF
 				text: message,
 			},
 		});
-		return res.status(StatusCodes.OK).json({ createdMessage });
+
+		if (req.user.initialized) {
+			return res.status(StatusCodes.OK).json({ createdMessage });
+		}
+
+		const initializedUser = await db.user.update({
+			where: {
+				id: req.user.id,
+			},
+			data: {
+				initialized: true,
+			},
+		});
+		return res.status(StatusCodes.OK).json({ createdMessage, initializedUser });
 	} catch (error) {
 		next(error);
 	}

@@ -1,4 +1,5 @@
 'use client';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store';
 import { Avatar, AvatarImage } from 'ui/components/ui/avatar';
@@ -6,27 +7,15 @@ import LogoutButton from './logout-button';
 import { onOpen } from '../../../redux/slices/modalSlice';
 import Link from 'next/link';
 import { Button } from 'ui';
-import { PiNumberSquareFiveBold } from 'react-icons/pi';
-import { FaRegCalendar } from 'react-icons/fa';
-import { LuTrophy } from 'react-icons/lu';
-import { FaRegMessage } from 'react-icons/fa6';
-import { PiExam } from 'react-icons/pi';
 import { IoIosJournal } from 'react-icons/io';
 import { ImProfile } from 'react-icons/im';
 import SquigglyLines from './../../../public/_static/svg/squigily-lines';
 import { toast } from 'sonner';
 import { usePathname } from 'next/navigation';
 import { cn } from '../../../utils';
-import { FaHome } from 'react-icons/fa';
-
-const navigationItems = [
-	{ name: 'Home', link: '/home', icon: <FaHome /> },
-	{ name: 'Grades', link: '/grades', icon: <PiNumberSquareFiveBold /> },
-	{ name: 'Frequency', link: '/frequency', icon: <FaRegCalendar /> },
-	{ name: 'Achievements', link: '/achievements', icon: <LuTrophy /> },
-	{ name: 'Messages', link: '/messages', icon: <FaRegMessage /> },
-	{ name: 'Tests', link: '/tests', icon: <PiExam /> },
-];
+import { navigationItems } from '../../../utils/constants/navigation-items';
+import { useQuery } from '@tanstack/react-query';
+import { showCurrentStudent } from '../../../api/actions/user/user.queries';
 
 export const NavbarDesktop = () => {
 	const dispatch = useDispatch();
@@ -34,25 +23,38 @@ export const NavbarDesktop = () => {
 	const pathname = usePathname();
 	const pathnames = pathname.split(' ');
 
+	const { data } = useQuery({
+		queryKey: ['currentStudent'],
+		queryFn: showCurrentStudent,
+	});
+	const currentStudent = data?.currentStudent;
+
+	const isStudentOrTeacher =
+		(currentStudent?.classId && currentUser?.type === 'student') || currentUser?.type === 'teacher';
+
+	const handleUpdateUserModal = () => {
+		dispatch(onOpen('updateUser'));
+	};
+
+	const handleNavigationClick = (itemLink: string) => {
+		if (!isStudentOrTeacher) {
+			toast.error('First you have to join the class.');
+		}
+	};
+
 	return (
 		<nav className="fixed hidden h-screen w-full flex-col items-center border-r-[1px] border-gray-300 p-5 lg:flex lg:w-60 dark:bg-transparent">
 			<div className="flex flex-col items-center">
-				<div className="flex flex-col items-center" onClick={() => dispatch(onOpen('updateUser'))}>
-					{currentUser?.imageUrl ? (
-						<Avatar className="h-20 w-20 cursor-pointer border-[1px] border-violet-400">
-							<AvatarImage src={currentUser.imageUrl} />
-						</Avatar>
-					) : (
-						<Avatar className="h-20 w-20 cursor-pointer border-[1px] border-violet-400">
-							<AvatarImage src="https://github.com/shadcn.png" />
-						</Avatar>
-					)}
+				<div className="flex flex-col items-center" onClick={handleUpdateUserModal}>
+					<Avatar className="h-20 w-20 cursor-pointer border-[1px] border-violet-400">
+						<AvatarImage src={currentUser?.imageUrl || 'https://github.com/shadcn.png'} />
+					</Avatar>
 					<div className="ml-2 mt-1 flex flex-col justify-center text-center">
 						<p className="cursor-pointer text-lg font-bold">
 							{currentUser?.firstName} {currentUser?.lastName}
 						</p>
 						<span className="text-md -mt-1 cursor-pointer text-gray-500">
-							{/* {currentUser?.class ? currentUser?.class : '-'} */}
+							{currentStudent?.class ? currentStudent?.class?.className : '-'}
 						</span>
 					</div>
 				</div>
@@ -70,21 +72,14 @@ export const NavbarDesktop = () => {
 								pathnames.includes(item.link) ? 'bg-violet-100 text-violet-600' : '',
 							)}
 						>
-							{/* <Link
-								onClick={() => {
-									if (currentUser?.class && currentUser?.type === 'student')
-										toast.error('First you have to join to the class.');
-								}}
+							<Link
+								onClick={() => handleNavigationClick(item.link)}
 								className="text-md flex w-full items-center gap-2 font-semibold"
-								href={
-									(!currentUser?.class && currentUser?.type === 'student') ||
-									currentUser?.type === 'teacher'
-										? item.link
-										: '/'
-								}
+								href={isStudentOrTeacher ? item.link : '/'}
 							>
-								{item.icon} {item.name}
-							</Link> */}
+								<item.icon />
+								{item.name}
+							</Link>
 						</li>
 					))}
 				</ul>
@@ -99,7 +94,7 @@ export const NavbarDesktop = () => {
 					<IoIosJournal /> About the journal
 				</Button>
 				<Button
-					onClick={() => dispatch(onOpen('updateUser'))}
+					onClick={handleUpdateUserModal}
 					variant="ghost"
 					className="text-md flex w-full items-center justify-start gap-2 rounded-2xl px-3 py-5 font-semibold transition-all hover:bg-violet-100 hover:text-violet-600"
 				>

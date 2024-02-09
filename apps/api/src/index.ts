@@ -13,10 +13,11 @@ import authRouter from './routes/authRoutes';
 import userRouter from './routes/userRoutes';
 import classRouter from './routes/classRoutes';
 import messageRouter from './routes/messageRoutes';
+import notificationRouter from './routes/notificationRoutes';
 import errorHandlerMiddleware from './middleware/errorHandlerMiddleware';
 import { notFound } from './middleware/notFound';
 import { createServer } from 'http';
-import { socket } from './socket/chat/chat';
+import { socket } from './socket/socket';
 const app = express();
 export const httpServer = createServer(app);
 
@@ -40,6 +41,7 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/class', classRouter);
 app.use('/api/v1/message', messageRouter);
+app.use('/api/v1/notification', notificationRouter);
 
 app.use(notFound);
 app.use(errorHandlerMiddleware);

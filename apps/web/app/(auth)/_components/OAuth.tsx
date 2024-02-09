@@ -29,8 +29,6 @@ export const OAuth = () => {
 		},
 	});
 
-	console.log(error);
-
 	const handleGoogleClick = async () => {
 		const provider = new GoogleAuthProvider();
 		const auth = getAuth(app);

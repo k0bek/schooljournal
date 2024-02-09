@@ -50,7 +50,7 @@ export const RegisterModal = () => {
 		},
 	});
 
-	const { status, error, mutate } = useMutation({
+	const { status, mutate } = useMutation({
 		mutationFn: postRegister,
 		mutationKey: ['register'],
 		onSuccess: ({ data }) => {

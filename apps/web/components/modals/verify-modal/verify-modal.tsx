@@ -1,35 +1,10 @@
 'use client';
 
-import * as z from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from 'ui/components/ui/dialog';
-import { Input } from 'ui/components/ui/input';
-import { Button } from 'ui/components/ui/button';
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from 'ui/components/ui/form';
-import { RadioGroup, RadioGroupItem } from 'ui/components/ui/radio-group';
+import { Dialog, DialogContent } from 'ui/components/ui/dialog';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store';
-import { onClose, onOpen } from '../../../redux/slices/modalSlice';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { postRegister } from '../../../api/actions/auth/auth.queries';
-import { useRouter } from 'next/navigation';
+import { onClose } from '../../../redux/slices/modalSlice';
 import { useState } from 'react';
-import { signInSuccess } from '../../../redux/slices/userSlice';
 import Lottie from 'lottie-react';
 import animationData from './../../../public/animations/email-sent.json';
 

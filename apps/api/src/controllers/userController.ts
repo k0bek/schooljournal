@@ -3,9 +3,10 @@ import { db } from '../../../../packages/database/db';
 import { StatusCodes } from 'http-status-codes';
 import UnauthenticatedError from '../errors/unauthenticated';
 import { User } from '@prisma/client';
+import BadRequestError from '../errors/bad-request';
 
 interface AuthenticatedRequest extends Request {
-	user?: User | {};
+	user?: User;
 }
 
 export const updateUser = async (req: Request, res: Response) => {
@@ -53,4 +54,21 @@ export const showCurrentUser = async (req: AuthenticatedRequest, res: Response) 
 export const getAllUsers = async (req: AuthenticatedRequest, res: Response) => {
 	const users = await db.user.findMany({});
 	return res.status(StatusCodes.OK).json({ users });
+};
+
+export const showCurrentStudent = async (req: AuthenticatedRequest, res: Response) => {
+	if (!req.user?.id) {
+		throw new BadRequestError('There is no user with this id.');
+	}
+	const currentStudent = await db.student.findUnique({
+		where: {
+			userId: req.user.id,
+		},
+		include: {
+			requestedClasses: true,
+			class: true,
+		},
+	});
+
+	return res.status(StatusCodes.OK).json({ currentStudent });
 };

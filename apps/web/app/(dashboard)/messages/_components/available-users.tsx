@@ -16,8 +16,10 @@ interface AvailableUsersProps {
 	socket: Socket;
 }
 
-export const AvailableUsers = ({ setIsChatOpen, socket }: AvailableUsersProps) => {
+export const AvailableUsers = ({ setIsChatOpen }: AvailableUsersProps) => {
 	const dispatch = useDispatch();
+	const { socket } = useSelector((state: RootState) => state.socket);
+
 	const { data } = useQuery({
 		queryKey: ['users'],
 		queryFn: getAllUsers,

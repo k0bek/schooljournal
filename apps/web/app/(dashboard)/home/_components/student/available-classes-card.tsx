@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from 'ui';
 import { User } from '@prisma/client';
 import { CiCircleInfo } from 'react-icons/ci';
@@ -7,6 +9,11 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from '../../../../../../../packages/ui/components/ui/tooltip';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { requestJoinClass } from '../../../../../api/actions/class/class.queries';
+import { useEffect, useState } from 'react';
+import { cn } from 'ui/lib/utils';
+import { showCurrentStudent } from '../../../../../api/actions/user/user.queries';
 
 export const AvailableClassesCard = ({
 	numberOfStudents,
@@ -15,6 +22,7 @@ export const AvailableClassesCard = ({
 	formTeacherLastName,
 	subjects,
 	students,
+	classId,
 }: {
 	numberOfStudents: number;
 	className: string;
@@ -22,7 +30,35 @@ export const AvailableClassesCard = ({
 	formTeacherLastName: string;
 	subjects: string[];
 	students: User[];
+	classId: string;
 }) => {
+	const [isClassRequested, setIsClassRequested] = useState(false);
+
+	const { data, refetch: currentStudentRefetch } = useQuery({
+		queryKey: ['currentStudent'],
+		queryFn: showCurrentStudent,
+	});
+	const currentStudent = data?.currentStudent;
+
+	const { mutate: requestJoinClassMutate } = useMutation({
+		mutationFn: requestJoinClass,
+		mutationKey: ['requestJoinClass'],
+	});
+
+	useEffect(() => {
+		if (!!currentStudent?.requestedClasses.find(classItem => classItem.id === classId)) {
+			setIsClassRequested(true);
+		}
+	});
+
+	const handleRequestJoinClass = async () => {
+		setIsClassRequested(true);
+		requestJoinClassMutate({ classId });
+		await currentStudentRefetch();
+	};
+
+	console.log(students.length);
+
 	return (
 		<div className="flex flex-col rounded-3xl border-[1px] border-violet-200 bg-violet-100 p-4 lg:max-w-[30rem] dark:bg-transparent">
 			<div className="flex flex-col gap-1">
@@ -56,7 +92,12 @@ export const AvailableClassesCard = ({
 					</span>
 				</p>
 			</div>
-			<Button variant="outline" className="ml-auto mt-2 w-full md:w-auto">
+			<Button
+				variant="outline"
+				className={cn('ml-auto mt-2 w-full md:w-auto', isClassRequested && 'bg-slate-300')}
+				onClick={handleRequestJoinClass}
+				disabled={isClassRequested}
+			>
 				Request to join
 			</Button>
 		</div>

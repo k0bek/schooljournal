@@ -35,7 +35,6 @@ type ErrorType = { response: { data: { msg: string } } };
 export const LoginModal = () => {
 	const router = useRouter();
 	const { isOpen, type } = useSelector((state: RootState) => state.modal);
-	const { currentUser } = useSelector((state: RootState) => state.user);
 	const dispatch = useDispatch();
 	const isModalOpen = isOpen && type === 'login';
 	const [formError, setFormError] = useState<ErrorType>({ response: { data: { msg: '' } } });
@@ -48,9 +47,7 @@ export const LoginModal = () => {
 		},
 	});
 
-	const isLoading = form.formState.isSubmitting;
-
-	const { status, error, mutate } = useMutation({
+	const { status, mutate } = useMutation({
 		mutationFn: postLogin,
 		mutationKey: ['login'],
 		onSuccess: ({ data }) => {

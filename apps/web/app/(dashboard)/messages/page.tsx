@@ -7,12 +7,12 @@ import { RootState } from '../../../redux/store';
 import { onClose, onOpen } from '../../../redux/slices/modalSlice';
 import { Chat } from './_components/chat/chat';
 import { GeneralInfo } from './_components/general-info';
-import { io } from 'socket.io-client';
-const socket = io('http://localhost:5001/');
 
 const MessagePage = () => {
 	const [isChatOpen, setIsChatOpen] = useState(false);
 	const { currentUser } = useSelector((state: RootState) => state.user);
+	const { socket } = useSelector((state: RootState) => state.socket);
+
 	const dispatch = useDispatch();
 
 	useEffect(() => {
