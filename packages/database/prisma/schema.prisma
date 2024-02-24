@@ -34,7 +34,7 @@ model User {
   student Student?
   messagesInitiated Message[] @relation("MemberOne")
   messagesReceived Message[] @relation("MemberTwo")
-   notificationsInitiated Notification[] @relation("MemberOne")
+  notificationsInitiated Notification[] @relation("MemberOne")
   notificationssReceived Notification[] @relation("MemberTwo")
   initialized Boolean @default(false)
   createdAt        DateTime   @default(now())
@@ -44,7 +44,7 @@ model User {
 model Teacher {
   id               String     @id @default(auto()) @map("_id") @db.ObjectId
   user             User @relation(fields: [userId], references: [id])
-  userId           String @unique
+  userId           String @unique @db.ObjectId
   createdClass Class[]
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
@@ -52,18 +52,19 @@ model Teacher {
 model Student {
     id               String     @id @default(auto()) @map("_id") @db.ObjectId
   user User @relation(fields: [userId], references: [id])
-  userId           String @unique
+  userId           String @unique @db.ObjectId
   classIDs String[]   @db.ObjectId
-  classId String?
+  classId String? @unique @db.ObjectId
   class Class? @relation("currentClass", fields: [classId], references: [id]) 
   requestedClasses Class[] @relation("requested",fields: [classIDs], references: [id])
+  subjects Subject[]
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
 }
 
 model Token {
   id               String     @id @default(auto()) @map("_id") @db.ObjectId
-  userId       String
+  userId       String @db.ObjectId
   refreshToken String
   isValid      Boolean
   user         User     @relation(fields: [userId], references: [id])
@@ -75,8 +76,8 @@ model Class {
   id               String     @id @default(auto()) @map("_id") @db.ObjectId
   className        String     @unique
   numberOfStudents Int
-  subjects         String[]
-  formTeacherId String
+  subjects         Subject[]
+  formTeacherId String @db.ObjectId
   formTeacher Teacher @relation(fields: [formTeacherId], references: [userId])
   studentIDs String[]   @db.ObjectId
   requestedStudents Student[] @relation("requested", fields: [studentIDs], references: [id])
@@ -88,9 +89,9 @@ model Class {
 model Message{
   id               String     @id @default(auto()) @map("_id") @db.ObjectId
   text String
-  memberOneId String
+  memberOneId String @db.ObjectId
   memberOne User @relation("MemberOne", fields: [memberOneId], references: [id])
-  memberTwoId String?
+  memberTwoId String? @db.ObjectId
   memberTwo User? @relation("MemberTwo", fields: [memberTwoId], references: [id])
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
@@ -99,12 +100,30 @@ model Message{
 model Notification{
   id               String     @id @default(auto()) @map("_id") @db.ObjectId
   text String
-  memberOneId String
+  memberOneId String @db.ObjectId
   memberOne User @relation("MemberOne", fields: [memberOneId], references: [id])
-  memberTwoId String
+  memberTwoId String @db.ObjectId
   memberTwo User @relation("MemberTwo", fields: [memberTwoId], references: [id])
   url String
   readed Boolean @default(false)
  createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
+}
+
+model Subject{
+  id               String     @id @default(auto()) @map("_id") @db.ObjectId
+  classId String @db.ObjectId
+  userId String? @db.ObjectId
+  subjectName String
+  student Student? @relation(fields: [userId], references: [classId])
+  class Class @relation(fields: [classId], references: [id])
+  grades Grade[]
+}
+
+model Grade{
+  id               String     @id @default(auto()) @map("_id") @db.ObjectId
+  subjectId String @db.ObjectId
+  topic String
+  grade Int
+  subject Subject @relation(fields: [subjectId], references: [id])
 }

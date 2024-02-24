@@ -4,6 +4,7 @@ import { StatusCodes } from 'http-status-codes';
 import UnauthenticatedError from '../errors/unauthenticated';
 import { User } from '@prisma/client';
 import BadRequestError from '../errors/bad-request';
+var ObjectID = require('bson-objectid');
 
 interface AuthenticatedRequest extends Request {
 	user?: User;
@@ -28,7 +29,7 @@ export const updateUser = async (req: Request, res: Response) => {
 		if (type === 'teacher') {
 			createdUser = await db.teacher.create({
 				data: {
-					userId: user.id,
+					userId: ObjectID(user.id),
 				},
 			});
 		}
@@ -36,7 +37,7 @@ export const updateUser = async (req: Request, res: Response) => {
 		if (type === 'student') {
 			createdUser = await db.student.create({
 				data: {
-					userId: user.id,
+					userId: ObjectID(user.id),
 				},
 			});
 		}
@@ -62,11 +63,16 @@ export const showCurrentStudent = async (req: AuthenticatedRequest, res: Respons
 	}
 	const currentStudent = await db.student.findUnique({
 		where: {
-			userId: req.user.id,
+			userId: ObjectID(req.user.id),
 		},
 		include: {
 			requestedClasses: true,
 			class: true,
+			subjects: {
+				include: {
+					grades: true,
+				},
+			},
 		},
 	});
 

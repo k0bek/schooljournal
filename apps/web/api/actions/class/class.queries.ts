@@ -24,6 +24,14 @@ export const getClasses = async () => {
 	}
 };
 
+export const getClass = async () => {
+	try {
+		return (await axios.get('/api/v1/class/getClass')).data;
+	} catch (error) {
+		throw error;
+	}
+};
+
 export const requestJoinClass = async ({ classId }: { classId: string }) => {
 	try {
 		return await axios.patch('/api/v1/class/requestJoinClass', { classId });

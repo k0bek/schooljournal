@@ -3,6 +3,7 @@ import { db } from '../../../../packages/database/db';
 import { StatusCodes } from 'http-status-codes';
 import BadRequestError from '../errors/bad-request';
 import { User } from '@prisma/client';
+var ObjectID = require('bson-objectid');
 
 interface MessageRequest extends Request {
 	user?: User;
@@ -10,21 +11,24 @@ interface MessageRequest extends Request {
 
 export const getAllMessages = async (req: MessageRequest, res: Response, next: NextFunction) => {
 	try {
-		const { memberTwoId, message } = req.body;
+		const { memberTwoId } = req.query;
+
+		if (!memberTwoId) {
+			throw new BadRequestError('There is no user with this id.');
+		}
 
 		const messages = await db.message.findMany({
 			where: {
 				OR: [
 					{
-						memberTwoId: req?.user?.id,
-						memberOneId: memberTwoId,
+						memberTwoId: ObjectID(req?.user?.id),
+						memberOneId: ObjectID(memberTwoId) as string,
 					},
 					{
-						memberOneId: req?.user?.id,
-						memberTwoId: memberTwoId,
+						memberOneId: ObjectID(req?.user?.id),
+						memberTwoId: ObjectID(memberTwoId) as string,
 					},
 				],
-				text: message,
 			},
 			orderBy: {
 				updatedAt: 'asc',
@@ -50,8 +54,8 @@ export const addMessage = async (req: MessageRequest, res: Response, next: NextF
 
 		const createdMessage = await db.message.create({
 			data: {
-				memberTwoId,
-				memberOneId: req.user.id,
+				memberTwoId: ObjectID(memberTwoId),
+				memberOneId: ObjectID(req.user.id),
 				text: message,
 			},
 		});
@@ -62,7 +66,7 @@ export const addMessage = async (req: MessageRequest, res: Response, next: NextF
 
 		const initializedUser = await db.user.update({
 			where: {
-				id: req.user.id,
+				id: ObjectID(req.user.id),
 			},
 			data: {
 				initialized: true,

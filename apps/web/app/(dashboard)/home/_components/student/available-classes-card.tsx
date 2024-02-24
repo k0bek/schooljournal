@@ -9,11 +9,10 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from '../../../../../../../packages/ui/components/ui/tooltip';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { requestJoinClass } from '../../../../../api/actions/class/class.queries';
 import { useEffect, useState } from 'react';
 import { cn } from 'ui/lib/utils';
-import { showCurrentStudent } from '../../../../../api/actions/user/user.queries';
 
 export const AvailableClassesCard = ({
 	numberOfStudents,
@@ -23,6 +22,7 @@ export const AvailableClassesCard = ({
 	subjects,
 	students,
 	classId,
+	currentStudent,
 }: {
 	numberOfStudents: number;
 	className: string;
@@ -33,12 +33,7 @@ export const AvailableClassesCard = ({
 	classId: string;
 }) => {
 	const [isClassRequested, setIsClassRequested] = useState(false);
-
-	const { data, refetch: currentStudentRefetch } = useQuery({
-		queryKey: ['currentStudent'],
-		queryFn: showCurrentStudent,
-	});
-	const currentStudent = data?.currentStudent;
+	const queryClient = useQueryClient();
 
 	const { mutate: requestJoinClassMutate } = useMutation({
 		mutationFn: requestJoinClass,
@@ -46,18 +41,17 @@ export const AvailableClassesCard = ({
 	});
 
 	useEffect(() => {
-		if (!!currentStudent?.requestedClasses.find(classItem => classItem.id === classId)) {
+		setIsClassRequested(false);
+		if (currentStudent?.requestedClasses.find(classItem => classItem.id === classId)) {
 			setIsClassRequested(true);
 		}
-	});
+	}, [currentStudent]);
 
 	const handleRequestJoinClass = async () => {
+		queryClient.invalidateQueries({ queryKey: ['classes'] });
 		setIsClassRequested(true);
 		requestJoinClassMutate({ classId });
-		await currentStudentRefetch();
 	};
-
-	console.log(students.length);
 
 	return (
 		<div className="flex flex-col rounded-3xl border-[1px] border-violet-200 bg-violet-100 p-4 lg:max-w-[30rem] dark:bg-transparent">
@@ -75,8 +69,8 @@ export const AvailableClassesCard = ({
 								<TooltipContent>
 									<ul>
 										Class subjects:
-										{subjects.map(subject => (
-											<li key={subject}>- {subject}</li>
+										{subjects?.map(subject => (
+											<li key={subject?.subjectName}>- {subject?.subjectName}</li>
 										))}
 									</ul>
 								</TooltipContent>

@@ -3,9 +3,7 @@ import moment from 'moment';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../redux/store';
 
-export const GeneralInfo = () => {
-	const { memberTwo } = useSelector((state: RootState) => state.chat);
-
+export const GeneralInfo = ({ memberTwo }) => {
 	return (
 		<div className="mt-5 flex flex-col pb-2 lg:mt-11">
 			<h2 className="mb-4 text-2xl">General info</h2>

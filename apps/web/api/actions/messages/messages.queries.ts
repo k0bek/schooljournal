@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-export const getAllMessages = async () => {
+export const getAllMessages = async ({ memberTwoId }: { memberTwoId: string }) => {
 	try {
-		return (await axios.get('/api/v1/message/getmsg')).data;
+		return (await axios.get(`/api/v1/message/getmsg?memberTwoId=${memberTwoId}`)).data;
 	} catch (error) {
 		throw error;
 	}

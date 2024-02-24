@@ -3,6 +3,7 @@ import { db } from '../../../../packages/database/db';
 import { StatusCodes } from 'http-status-codes';
 import BadRequestError from '../errors/bad-request';
 import { User } from '@knocklabs/node';
+var ObjectID = require('bson-objectid');
 
 interface NotificationRequest extends Request {
 	user?: User;
@@ -20,7 +21,7 @@ export const getAllNotifications = async (
 
 		const notifications = await db.notification.findMany({
 			where: {
-				memberOneId: req.user.id,
+				memberOneId: ObjectID(req.user.id),
 			},
 			orderBy: {
 				updatedAt: 'asc',
@@ -53,12 +54,12 @@ export const createNotification = async (
 					memberOneId,
 					text,
 					url,
-					memberTwoId: '',
+					memberTwoId: ObjectID(''),
 				},
 			});
 			const initializedUser = await db.user.update({
 				where: {
-					id: req.user.id,
+					id: ObjectID(req.user.id),
 				},
 				data: {
 					initialized: true,
@@ -69,8 +70,8 @@ export const createNotification = async (
 
 		const createdNotification = await db.notification.create({
 			data: {
-				memberTwoId,
-				memberOneId,
+				memberTwoId: ObjectID(memberTwoId),
+				memberOneId: ObjectID(memberOneId),
 				text,
 				url,
 			},
@@ -78,7 +79,7 @@ export const createNotification = async (
 
 		const initializedUser = await db.user.update({
 			where: {
-				id: req.user.id,
+				id: ObjectID(req.user.id),
 			},
 			data: {
 				initialized: true,
@@ -100,7 +101,7 @@ export const markReadNotification = async (
 	try {
 		const notifications = await db.notification.update({
 			where: {
-				id,
+				id: ObjectID(id),
 			},
 			data: {
 				readed: true,

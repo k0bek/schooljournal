@@ -1,6 +1,6 @@
 'use client';
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from 'ui';
 import { logout } from '../../../api/actions/auth/auth.queries';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,13 +12,15 @@ const LogoutButton = () => {
 	const { currentUser } = useSelector((state: RootState) => state.user);
 	const dispatch = useDispatch();
 	const router = useRouter();
+	const queryClient = useQueryClient();
 
-	const { status, error, mutate, data } = useMutation({
+	const { mutate } = useMutation({
 		mutationFn: logout,
 		mutationKey: ['logout'],
 		onSuccess: ({ data }) => {
 			router.push('/');
 			dispatch(signInSuccess(data.user));
+			queryClient.clear();
 		},
 	});
 

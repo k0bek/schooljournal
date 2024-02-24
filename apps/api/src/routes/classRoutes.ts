@@ -2,6 +2,7 @@ import express from 'express';
 import {
 	acceptStudent,
 	createClass,
+	getClass,
 	getClasses,
 	getRequestedStudents,
 	requestJoinClass,
@@ -14,5 +15,6 @@ router.get('/getClasses', authenticateUser, getClasses);
 router.patch('/requestJoinClass', authenticateUser, requestJoinClass);
 router.get('/getRequestedStudents', authenticateUser, getRequestedStudents);
 router.patch('/acceptStudent', acceptStudent);
+router.get('/getClass', authenticateUser, getClass);
 
 export default router;

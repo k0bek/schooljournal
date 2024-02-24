@@ -15,13 +15,15 @@ const HomePage = () => {
 	const dispatch = useDispatch();
 
 	const { currentUser } = useSelector((state: RootState) => state.user);
-	const { data } = useQuery({
+	const { data, refetch } = useQuery({
 		queryKey: ['currentStudent'],
 		queryFn: showCurrentStudent,
+		initialData: null,
 	});
 	const currentStudent = data?.currentStudent;
 
 	useEffect(() => {
+		refetch();
 		if (!currentUser?.firstName || !currentUser?.lastName) {
 			dispatch(onOpen('firstNameLastName'));
 		} else {
@@ -29,12 +31,14 @@ const HomePage = () => {
 		}
 	}, []);
 
+	console.log(currentStudent);
+
 	return (
 		<main className="w-full px-5 py-1 lg:ml-64 lg:py-5">
 			{currentUser?.type === 'student' && (
 				<>
 					<Welcome />
-					{!currentStudent?.classId && <AvailableClasses />}
+					{!currentStudent?.classId && <AvailableClasses currentStudent={currentStudent} />}
 				</>
 			)}
 			{currentUser?.type === 'teacher' && (

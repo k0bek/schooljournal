@@ -45,7 +45,7 @@ export const ClassRequests = () => {
 					Class<span className="text-black dark:text-white"> requests</span>
 				</h2>
 				<span className="text-xs">
-					*if you accept student request rest of the student`&apos;`s requests will be deleted
+					*if you accept student request rest of the student&apos;s requests will be deleted
 				</span>
 				<div className="mx-auto mt-4">
 					<ScrollArea className="h-48 rounded-md border">

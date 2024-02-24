@@ -7,9 +7,10 @@ import UnauthenticatedError from '../errors/unauthenticated';
 import crypto from 'crypto';
 import BadRequestError from '../errors/bad-request';
 import { sendEmail } from './../utils/sendEmail';
+var ObjectID = require('bson-objectid');
 
 export const google = async (req: Request, res: Response) => {
-	const { id, email, imageUrl, username } = req.body;
+	const { email, imageUrl, username } = req.body;
 	const user = await db.user.findUnique({ where: { email } });
 	let refreshToken = '';
 
@@ -17,7 +18,7 @@ export const google = async (req: Request, res: Response) => {
 		const token = createJWT({ payload: { user } });
 		const existingToken = await db.token.findFirst({
 			where: {
-				userId: id,
+				userId: ObjectID(user.id),
 			},
 		});
 
@@ -38,7 +39,7 @@ export const google = async (req: Request, res: Response) => {
 			refreshToken = crypto.randomBytes(40).toString('hex');
 			await db.token.create({
 				data: {
-					userId: user.id,
+					userId: ObjectID(user.id),
 					refreshToken,
 					isValid: true,
 				},
@@ -74,7 +75,7 @@ export const google = async (req: Request, res: Response) => {
 		attachCookiesToResponse({ res, user, refreshToken });
 		await db.token.create({
 			data: {
-				userId: user.id,
+				userId: ObjectID(user.id),
 				refreshToken,
 				isValid: true,
 			},
@@ -123,7 +124,7 @@ export const register = async (req: Request, res: Response) => {
 	if (type === 'teacher') {
 		createdUser = await db.teacher.create({
 			data: {
-				userId: user.id,
+				userId: ObjectID(user.id),
 			},
 		});
 	}
@@ -131,7 +132,7 @@ export const register = async (req: Request, res: Response) => {
 	if (type === 'student') {
 		createdUser = await db.student.create({
 			data: {
-				userId: user.id,
+				userId: ObjectID(user.id),
 			},
 		});
 	}
@@ -139,7 +140,7 @@ export const register = async (req: Request, res: Response) => {
 	const token = createJWT({ payload: { user } });
 	await db.token.create({
 		data: {
-			userId: user.id,
+			userId: ObjectID(user.id),
 			refreshToken,
 			isValid: true,
 		},
@@ -182,7 +183,7 @@ export const login = async (req: Request, res: Response) => {
 	}
 
 	if (!user.verified) {
-		let token = await db.token.findFirst({ where: { userId: user.id } });
+		let token = await db.token.findFirst({ where: { userId: ObjectID(user.id) } });
 		const url = `${process.env.BASE_URL}/users/${user.id}/verify/${token}`;
 		await sendEmail(user.email, 'Verify Email', url);
 		throw new UnauthenticatedError('Your account is not verified. Please check your mail.');
@@ -193,7 +194,7 @@ export const login = async (req: Request, res: Response) => {
 	attachCookiesToResponse({ res, user, refreshToken });
 	await db.token.create({
 		data: {
-			userId: user.id,
+			userId: ObjectID(user.id),
 			refreshToken,
 			isValid: true,
 		},
@@ -202,14 +203,14 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const verifyEmail = async (req: Request, res: Response) => {
-	const user = await db.user.findUnique({ where: { id: req.params.id } });
+	const user = await db.user.findUnique({ where: { id: ObjectID(req.params.id) } });
 	if (!user) {
 		throw new BadRequestError('Invalid link.');
 	}
 
 	const existingToken = await db.token.findFirst({
 		where: {
-			userId: user.id,
+			userId: ObjectID(user.id),
 		},
 	});
 
@@ -218,12 +219,12 @@ export const verifyEmail = async (req: Request, res: Response) => {
 	}
 
 	const updatedUser = await db.user.update({
-		where: { id: req.params.id },
+		where: { id: ObjectID(req.params.id) },
 		data: { verified: true },
 	});
 	await db.token.delete({
 		where: {
-			id: existingToken.id,
+			id: ObjectID(existingToken.id),
 		},
 	});
 
@@ -236,7 +237,7 @@ export const logout = async (req: Request, res: Response) => {
 	const { userId } = req.body;
 	const existingToken = await db.token.findFirst({
 		where: {
-			userId,
+			userId: ObjectID(userId),
 		},
 	});
 
@@ -246,7 +247,7 @@ export const logout = async (req: Request, res: Response) => {
 
 	await db.token.delete({
 		where: {
-			id: existingToken.id,
+			id: ObjectID(existingToken.id),
 		},
 	});
 

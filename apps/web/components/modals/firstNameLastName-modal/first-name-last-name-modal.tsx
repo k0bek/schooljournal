@@ -168,7 +168,7 @@ export const FirstNameLastNameModal = () => {
 									</FormItem>
 								)}
 							/>
-							{currentUser.authType === 'google' && (
+							{currentUser?.authType === 'google' && (
 								<FormField
 									control={form.control}
 									name="type"

@@ -3,8 +3,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { AvailableClassesCard } from './available-classes-card';
 import { getClasses } from '../../../../../api/actions/class/class.queries';
+import { Student } from '@prisma/client';
 
-export const AvailableClasses = () => {
+interface AvailableClassesProps {
+	currentStudent: Student;
+}
+
+export const AvailableClasses = ({ currentStudent }: AvailableClassesProps) => {
 	const { data } = useQuery({
 		queryKey: ['classes'],
 		queryFn: getClasses,
@@ -27,6 +32,7 @@ export const AvailableClasses = () => {
 						subjects={classItem.subjects}
 						students={classItem.students}
 						classId={classItem.id}
+						currentStudent={currentStudent}
 					/>
 				))}
 			</div>

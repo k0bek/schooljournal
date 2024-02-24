@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import BadRequestError from '../errors/bad-request';
 import { User } from '@prisma/client';
 import { StatusCodes } from 'http-status-codes';
+var ObjectID = require('bson-objectid');
 
 interface AuthenticatedRequest extends Request {
 	user?: User;
@@ -19,11 +20,22 @@ export const createClass = async (req: AuthenticatedRequest, res: Response) => {
 		data: {
 			className,
 			numberOfStudents,
-			subjects,
-			formTeacherId: req.user?.id as string,
+			formTeacherId: ObjectID(req.user?.id) as string,
 		},
 	});
-	res.status(StatusCodes.CREATED).json({ createdClass });
+
+	const createdSubjects = await Promise.all(
+		subjects.map(async (subject: string) => {
+			return await db.subject.create({
+				data: {
+					classId: ObjectID(createdClass.id),
+					subjectName: subject,
+				},
+			});
+		}),
+	);
+
+	res.status(StatusCodes.CREATED).json({ createdClass, createdSubjects });
 };
 
 export const getClasses = async (req: AuthenticatedRequest, res: Response) => {
@@ -44,6 +56,11 @@ export const getClasses = async (req: AuthenticatedRequest, res: Response) => {
 					user: true,
 				},
 			},
+			subjects: {
+				include: {
+					grades: true,
+				},
+			},
 		},
 	});
 	res.status(StatusCodes.OK).json({ classes });
@@ -56,31 +73,32 @@ export const requestJoinClass = async (req: AuthenticatedRequest, res: Response)
 		throw new BadRequestError('There is no user with this id.');
 	}
 
+	const currentStudent = await db.student.findUnique({
+		where: {
+			userId: req.user.id,
+		},
+	});
+
+	console.log(currentStudent);
+
 	const requestedClass = await db.class.update({
 		where: {
-			id: classId,
+			id: ObjectID(classId),
 		},
 		data: {
 			studentIDs: {
-				push: req.user.id,
+				push: ObjectID(currentStudent?.id),
 			},
 		},
 	});
 
-	console.log(requestedClass);
-
 	const requestedStudent = await db.student.update({
 		where: {
-			userId: req.user.id,
+			userId: ObjectID(req.user.id),
 		},
 		data: {
 			classIDs: {
-				push: classId,
-			},
-			requestedClasses: {
-				connect: {
-					id: classId,
-				},
+				push: ObjectID(classId),
 			},
 		},
 	});
@@ -95,12 +113,14 @@ export const getRequestedStudents = async (req: AuthenticatedRequest, res: Respo
 
 	const requestedClass = await db.class.findFirst({
 		where: {
-			formTeacherId: req.user.id,
+			formTeacherId: ObjectID(req.user.id),
 		},
 		include: {
 			requestedStudents: true,
 		},
 	});
+
+	console.log(requestedClass);
 
 	res.status(StatusCodes.OK).json({ requestedClass });
 };
@@ -144,24 +164,69 @@ export const acceptStudent = async (req: AuthenticatedRequest, res: Response) =>
 		},
 	});
 
-	await db.class.updateMany({
-		data: {
-			studentIDs: {
-				set: [],
-			},
+	const existingClass = await db.class.findUnique({
+		where: {
+			id: ObjectID(classId),
 		},
 	});
 
-	const acceptedStudent = await db.student.update({
+	const currentStudent = await db.student.findUnique({
 		where: {
 			userId: studentId,
 		},
+	});
+
+	if (existingClass) {
+		const classes = await db.class.findMany();
+
+		for (const classItem of classes) {
+			const updatedStudentIDs = classItem.studentIDs.filter(id => id !== currentStudent?.id);
+
+			console.log(updatedStudentIDs);
+
+			await db.class.update({
+				where: {
+					id: ObjectID(classItem.id),
+				},
+				data: {
+					studentIDs: updatedStudentIDs,
+				},
+			});
+		}
+	}
+
+	const acceptedStudent = await db.student.update({
+		where: {
+			userId: ObjectID(studentId),
+		},
 		data: {
-			classId,
+			classId: ObjectID(classId),
 		},
 	});
 
 	return res.status(StatusCodes.OK).json({ acceptedStudent });
 };
 
-// console.log(updatedClassIds);
+export const getClass = async (req: AuthenticatedRequest, res: Response) => {
+	const currentStudent = await db.student.findFirst({
+		where: {
+			userId: ObjectID(req.user?.id),
+		},
+	});
+	if (!currentStudent?.classId) {
+		throw new BadRequestError('There is no user with this id.');
+	}
+	const currentClass = await db.class.findFirst({
+		where: {
+			id: ObjectID(currentStudent.classId),
+		},
+		include: {
+			subjects: {
+				include: {
+					grades: true,
+				},
+			},
+		},
+	});
+	res.status(StatusCodes.OK).json({ currentClass });
+};

@@ -12,7 +12,7 @@ const MessagePage = () => {
 	const [isChatOpen, setIsChatOpen] = useState(false);
 	const { currentUser } = useSelector((state: RootState) => state.user);
 	const { socket } = useSelector((state: RootState) => state.socket);
-
+	const { memberTwo } = useSelector((state: RootState) => state.chat);
 	const dispatch = useDispatch();
 
 	useEffect(() => {
@@ -29,8 +29,8 @@ const MessagePage = () => {
 			<AvailableUsers setIsChatOpen={setIsChatOpen} socket={socket} />
 			{isChatOpen && (
 				<>
-					<Chat socket={socket} />
-					<GeneralInfo />
+					<Chat socket={socket} memberTwo={memberTwo} />
+					<GeneralInfo memberTwo={memberTwo} />
 				</>
 			)}
 		</main>

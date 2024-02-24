@@ -80,6 +80,7 @@ export const CreateClassModal = () => {
 			dispatch(onClose());
 			setFormError({ response: { data: { msg: '' } } });
 			router.refresh();
+			setSelected([subjects[0]]);
 		},
 		onError: (data: ErrorType) => {
 			setFormError(data);
@@ -101,8 +102,6 @@ export const CreateClassModal = () => {
 					message: 'You have to add subjects to create a class.',
 				});
 			}
-			setSelected([subjects[0]]);
-
 			mutate({ className, numberOfStudents, subjects: valueSubjects });
 			router.refresh();
 		} catch (error) {
