@@ -9,16 +9,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../../redux/store';
 import { assignMemberTwo } from '../../../../redux/slices/chatSlice';
 import { useEffect, useState } from 'react';
-import { Socket } from 'socket.io-client';
+import { socket } from '../../../../providers/socket';
 
 interface AvailableUsersProps {
 	setIsChatOpen: React.Dispatch<React.SetStateAction<boolean>>;
-	socket: Socket;
 }
 
 export const AvailableUsers = ({ setIsChatOpen }: AvailableUsersProps) => {
 	const dispatch = useDispatch();
-	const { socket } = useSelector((state: RootState) => state.socket);
 
 	const { data } = useQuery({
 		queryKey: ['users'],
@@ -41,6 +39,9 @@ export const AvailableUsers = ({ setIsChatOpen }: AvailableUsersProps) => {
 
 	useEffect(() => {
 		socket.on('loginResponse', data => setAvailableUsers(Object.values(data)));
+		return () => {
+			socket.off('loginResponse', data => setAvailableUsers(Object.values(data)));
+		};
 	}, [socket]);
 
 	return (

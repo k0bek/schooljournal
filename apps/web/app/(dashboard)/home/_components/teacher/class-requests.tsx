@@ -36,8 +36,6 @@ export const ClassRequests = () => {
 		getClassesRefetch();
 	};
 
-	console.log(classes);
-
 	return (
 		<section className="flex w-1/2 flex-col items-start">
 			<div className="w-full text-center">

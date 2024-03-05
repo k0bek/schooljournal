@@ -54,6 +54,7 @@ export const getClasses = async (req: AuthenticatedRequest, res: Response) => {
 			students: {
 				include: {
 					user: true,
+					subjects: true,
 				},
 			},
 			subjects: {
@@ -78,8 +79,6 @@ export const requestJoinClass = async (req: AuthenticatedRequest, res: Response)
 			userId: req.user.id,
 		},
 	});
-
-	console.log(currentStudent);
 
 	const requestedClass = await db.class.update({
 		where: {
@@ -119,8 +118,6 @@ export const getRequestedStudents = async (req: AuthenticatedRequest, res: Respo
 			requestedStudents: true,
 		},
 	});
-
-	console.log(requestedClass);
 
 	res.status(StatusCodes.OK).json({ requestedClass });
 };

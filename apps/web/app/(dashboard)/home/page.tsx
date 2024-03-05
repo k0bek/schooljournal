@@ -31,8 +31,6 @@ const HomePage = () => {
 		}
 	}, []);
 
-	console.log(currentStudent);
-
 	return (
 		<main className="w-full px-5 py-1 lg:ml-64 lg:py-5">
 			{currentUser?.type === 'student' && (

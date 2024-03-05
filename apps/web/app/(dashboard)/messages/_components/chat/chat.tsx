@@ -13,36 +13,29 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import { RootState } from '../../../../../redux/store';
 import { useDispatch, useSelector } from 'react-redux';
-import { Socket } from 'socket.io-client';
 import Lottie from 'lottie-react';
 import animationData from './../../../../../public/animations/loading.json';
 import { Avatar, AvatarImage } from 'ui/components/ui/avatar';
 import { createNotification } from '../../../../../api/actions/notification/notification.queries';
 import { assignChatNotification } from '../../../../../redux/slices/notificationSlice';
+import { socket } from '../../../../../providers/socket';
 
-interface ChatProps {
-	socket: Socket;
-}
-
-export const Chat = ({ socket, memberTwo }: ChatProps) => {
-	const queryClient = useQueryClient();
-
+export const Chat = ({ memberTwo }) => {
 	const dispatch = useDispatch();
 	const [messsageValue, setMessageValue] = useState('');
 	const { currentUser } = useSelector((state: RootState) => state.user);
-	const { chatNotification } = useSelector((state: RootState) => state.notification);
 	const { mutate } = useMutation({
 		mutationFn: createMessage,
 		mutationKey: ['messages'],
 	});
-	const { mutate: notificationMutate, data: notificationData } = useMutation({
+	const { mutate: notificationMutate } = useMutation({
 		mutationFn: createNotification,
 		mutationKey: ['notification'],
 	});
 
 	const [messages, setMessages] = useState([]);
 	const lastMessageRef = useRef(null);
-	const [typingStatus, setTypingStatus] = useState<{ msg: string; id: string }>({
+	const [typingStatus, setTypingStatus] = useState({
 		msg: '',
 		id: '',
 	});
@@ -51,7 +44,6 @@ export const Chat = ({ socket, memberTwo }: ChatProps) => {
 		data: dataMessage,
 		refetch: refetchMessage,
 		isRefetching: isRefetchingMessage,
-		isFetching: isFetchingMessage,
 	} = useQuery({
 		queryKey: ['messages'],
 		queryFn: () => getAllMessages({ memberTwoId: memberTwo.id }),

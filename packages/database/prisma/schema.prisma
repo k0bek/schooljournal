@@ -115,13 +115,14 @@ model Subject{
   classId String @db.ObjectId
   userId String? @db.ObjectId
   subjectName String
-  student Student? @relation(fields: [userId], references: [classId])
+  student Student? @relation(fields: [userId], references: [id])
   class Class @relation(fields: [classId], references: [id])
   grades Grade[]
 }
 
 model Grade{
   id               String     @id @default(auto()) @map("_id") @db.ObjectId
+  studentId String @db.ObjectId
   subjectId String @db.ObjectId
   topic String
   grade Int

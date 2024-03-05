@@ -1,6 +1,3 @@
-'use client';
-
-import { QueryClient, useQuery } from '@tanstack/react-query';
 import {
 	Table,
 	TableBody,
@@ -9,17 +6,27 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from '../../../../../../packages/ui/components/ui/table';
-import { getClass, getClasses } from '../../../../api/actions/class/class.queries';
+} from 'ui/components/ui/table';
 import { Grade } from '@prisma/client';
+import { useQuery } from '@tanstack/react-query';
+import { showCurrentStudent } from '../../../../../api/actions/user/user.queries';
+import { getSubjects } from '../../../../../api/actions/subjects/subjects.queries';
 
-export const GradesTable = () => {
-	const { data } = useQuery({
-		queryKey: ['class'],
-		queryFn: getClass,
+export const GradesTableStudent = () => {
+	const { data: currentStudentData } = useQuery({
+		queryKey: ['currentStudent'],
+		queryFn: showCurrentStudent,
 	});
-	const currentClass = data?.currentClass;
-	const currentClasSubjects = currentClass?.subjects;
+	const currentClassId = currentStudentData?.classId;
+
+	const { data } = useQuery({
+		queryKey: ['subjects', currentClassId],
+		queryFn: async () => {
+			const data = await getSubjects({ currentClassId: currentClassId });
+			return data;
+		},
+	});
+	const subjects = data?.subjects;
 
 	const countGradesAverage = (grades: Grade[]) => {
 		const integerGrades = grades?.map(grade => grade.grade);
@@ -29,9 +36,9 @@ export const GradesTable = () => {
 	};
 
 	return (
-		<main>
+		<main className="mt-10 lg:mt-0">
 			<Table>
-				<TableCaption>A list of your grades.</TableCaption>
+				<TableCaption>A list of grades.</TableCaption>
 				<TableHeader>
 					<TableRow>
 						<TableHead className="w-[100px]">Subject</TableHead>
@@ -40,7 +47,7 @@ export const GradesTable = () => {
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{currentClasSubjects?.map(subject => {
+					{subjects?.map(subject => {
 						return (
 							<>
 								<TableRow>

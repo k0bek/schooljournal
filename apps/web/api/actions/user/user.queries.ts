@@ -31,3 +31,11 @@ export const showCurrentStudent = async () => {
 		throw error;
 	}
 };
+
+export const showCurrentTeacher = async () => {
+	try {
+		return (await axios.get('/api/v1/user/showCurrentTeacher')).data;
+	} catch (error) {
+		throw error;
+	}
+};

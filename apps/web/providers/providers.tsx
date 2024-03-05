@@ -10,7 +10,6 @@ import ModalProvider from './modal-provider';
 import { PersistGate } from 'redux-persist/integration/react';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import UserProvider from './user-provider';
-import SocketProvider from './socket-provider';
 
 const Providers = async ({ children }: { children: ReactNode }) => {
 	const [queryClient] = useState(
@@ -32,17 +31,15 @@ const Providers = async ({ children }: { children: ReactNode }) => {
 				<ReactQueryDevtools initialIsOpen={false} />
 				<PersistGate loading={null} persistor={persistor}>
 					<UserProvider>
-						<SocketProvider>
-							<ThemeProvider
-								attribute="class"
-								defaultTheme="dark"
-								enableSystem={false}
-								storageKey="journal-theme"
-							>
-								<Background />
-								{children}
-							</ThemeProvider>
-						</SocketProvider>
+						<ThemeProvider
+							attribute="class"
+							defaultTheme="dark"
+							enableSystem={false}
+							storageKey="journal-theme"
+						>
+							<Background />
+							{children}
+						</ThemeProvider>
 					</UserProvider>
 					<ModalProvider />
 				</PersistGate>

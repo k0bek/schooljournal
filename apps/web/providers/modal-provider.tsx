@@ -7,6 +7,7 @@ import { FirstNameLastNameModal } from '../components/modals/firstNameLastName-m
 import { VerifyModal } from '../components/modals/verify-modal/verify-modal';
 import { UpdateUserModal } from '../components/modals/update-user-modal/update-user-modal';
 import { CreateClassModal } from '../components/modals/create-class-modal/create-class-modal';
+import { AddGradeModal } from '../components/modals/add-grade-modal/add-grade-modal';
 
 const ModalProvider = () => {
 	const [isMounted, setIsMounted] = useState(false);
@@ -27,6 +28,7 @@ const ModalProvider = () => {
 			<VerifyModal />
 			<UpdateUserModal />
 			<CreateClassModal />
+			<AddGradeModal />
 		</>
 	);
 };

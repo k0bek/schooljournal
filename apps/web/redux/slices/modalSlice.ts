@@ -6,7 +6,8 @@ export type ModalType =
 	| 'firstNameLastName'
 	| 'verify'
 	| 'updateUser'
-	| 'createClass';
+	| 'createClass'
+	| 'addGrade';
 
 // Define a type for the slice state
 interface ModalState {

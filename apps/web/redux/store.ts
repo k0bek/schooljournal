@@ -4,15 +4,15 @@ import { persistStore, persistReducer } from 'redux-persist';
 import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
 import userSlice from './slices/userSlice';
 import chatSlice from './slices/chatSlice';
-import socketSlice from './slices/socketSlice';
 import notificationSlice from './slices/notificationSlice';
+import addGradeSlice from './slices/addGradeSlice';
 
 const rootReducer = combineReducers({
 	modal: modalSlice,
 	user: userSlice,
 	chat: chatSlice,
-	socket: socketSlice,
 	notification: notificationSlice,
+	addGrade: addGradeSlice,
 });
 
 const createNoopStorage = () => {

@@ -13,6 +13,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { requestJoinClass } from '../../../../../api/actions/class/class.queries';
 import { useEffect, useState } from 'react';
 import { cn } from 'ui/lib/utils';
+import { Student } from '@prisma/client';
 
 export const AvailableClassesCard = ({
 	numberOfStudents,
@@ -31,6 +32,7 @@ export const AvailableClassesCard = ({
 	subjects: string[];
 	students: User[];
 	classId: string;
+	currentStudent: Student;
 }) => {
 	const [isClassRequested, setIsClassRequested] = useState(false);
 	const queryClient = useQueryClient();

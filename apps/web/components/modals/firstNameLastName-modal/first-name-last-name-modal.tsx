@@ -24,7 +24,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store';
 import { onClose } from '../../../redux/slices/modalSlice';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { formSchema } from './first-name-last-name-schema';
@@ -33,6 +33,7 @@ import { signInSuccess } from '../../../redux/slices/userSlice';
 import { updateUser } from '../../../api/actions/user/user.queries';
 import { createNotification } from '../../../api/actions/notification/notification.queries';
 import { assignNotification } from '../../../redux/slices/notificationSlice';
+import { socket } from '../../../providers/socket';
 
 type ErrorType = { response: { data: { msg: string } } };
 
@@ -40,7 +41,6 @@ export const FirstNameLastNameModal = () => {
 	const router = useRouter();
 	const { isOpen, type } = useSelector((state: RootState) => state.modal);
 	const { currentUser } = useSelector((state: RootState) => state.user);
-	const { socket } = useSelector((state: RootState) => state.socket);
 	const dispatch = useDispatch();
 	const isModalOpen = isOpen && type === 'firstNameLastName';
 	const [formError, setFormError] = useState<ErrorType>({ response: { data: { msg: '' } } });

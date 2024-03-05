@@ -66,15 +66,35 @@ export const showCurrentStudent = async (req: AuthenticatedRequest, res: Respons
 			userId: ObjectID(req.user.id),
 		},
 		include: {
-			requestedClasses: true,
-			class: true,
-			subjects: {
+			class: {
 				include: {
-					grades: true,
+					subjects: {
+						include: {
+							grades: true,
+						},
+					},
 				},
 			},
+			requestedClasses: true,
 		},
 	});
 
 	return res.status(StatusCodes.OK).json({ currentStudent });
+};
+
+export const showCurrentTeacher = async (req: AuthenticatedRequest, res: Response) => {
+	if (!req.user?.id) {
+		throw new BadRequestError('There is no user with this id.');
+	}
+	const currentTeacher = await db.teacher.findUnique({
+		where: {
+			userId: ObjectID(req.user.id),
+		},
+		include: {
+			createdClass: true,
+			user: true,
+		},
+	});
+
+	return res.status(StatusCodes.OK).json({ currentTeacher });
 };
