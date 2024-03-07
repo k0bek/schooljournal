@@ -6,23 +6,31 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from 'ui/components/ui/select';
-import { showCurrentTeacher } from '../../../../../api/actions/user/user.queries';
+import { showCurrentTeacher } from '../../../../api/actions/user/user.queries';
+import { useDispatch } from 'react-redux';
+import { assignClassId } from '../../../../redux/slices/classIdSlice';
 
 interface SelectClassProps {
-	selectClassToSearch: (className: string) => void;
+	setChoosedClassId: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export const SelectClass = ({ selectClassToSearch }: SelectClassProps) => {
+export const SelectClass = ({ setChoosedClassId }: SelectClassProps) => {
+	const dispatch = useDispatch();
 	const { data } = useQuery({
 		queryKey: ['class'],
 		queryFn: showCurrentTeacher,
 	});
 	const currentTeacher = data?.currentTeacher;
 
+	const handleClassId = (classId: string) => {
+		setChoosedClassId(classId);
+	};
+
 	return (
 		<Select
 			onValueChange={value => {
-				selectClassToSearch(value);
+				handleClassId(value);
+				dispatch(assignClassId(value));
 			}}
 		>
 			<SelectTrigger className="w-[180px]">
@@ -31,7 +39,7 @@ export const SelectClass = ({ selectClassToSearch }: SelectClassProps) => {
 			<SelectContent>
 				{currentTeacher?.createdClass.map((classItem, index) => {
 					return (
-						<SelectItem key={index} value={classItem.className}>
+						<SelectItem key={index} value={classItem.id}>
 							{classItem?.className}
 						</SelectItem>
 					);

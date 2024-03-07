@@ -16,6 +16,7 @@ import messageRouter from './routes/messageRoutes';
 import gradesRouter from './routes/gradesRoutes';
 import notificationRouter from './routes/notificationRoutes';
 import subjectsRouter from './routes/subjectsRoutes';
+import testsRouter from './routes/testsRoutes';
 import errorHandlerMiddleware from './middleware/errorHandlerMiddleware';
 import { notFound } from './middleware/notFound';
 import { createServer } from 'http';
@@ -46,6 +47,7 @@ app.use('/api/v1/message', messageRouter);
 app.use('/api/v1/notification', notificationRouter);
 app.use('/api/v1/grades', gradesRouter);
 app.use('/api/v1/subjects', subjectsRouter);
+app.use('/api/v1/tests', testsRouter);
 
 app.use(notFound);
 app.use(errorHandlerMiddleware);

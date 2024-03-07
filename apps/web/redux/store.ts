@@ -6,6 +6,8 @@ import userSlice from './slices/userSlice';
 import chatSlice from './slices/chatSlice';
 import notificationSlice from './slices/notificationSlice';
 import addGradeSlice from './slices/addGradeSlice';
+import addTestSlice from './slices/addTestSlice';
+import classIdSlice from './slices/classIdSlice';
 
 const rootReducer = combineReducers({
 	modal: modalSlice,
@@ -13,6 +15,8 @@ const rootReducer = combineReducers({
 	chat: chatSlice,
 	notification: notificationSlice,
 	addGrade: addGradeSlice,
+	addTest: addTestSlice,
+	classId: classIdSlice,
 });
 
 const createNoopStorage = () => {

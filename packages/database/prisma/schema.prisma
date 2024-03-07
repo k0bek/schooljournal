@@ -128,3 +128,12 @@ model Grade{
   grade Int
   subject Subject @relation(fields: [subjectId], references: [id])
 }
+
+model Test{
+  id               String     @id @default(auto()) @map("_id") @db.ObjectId
+  classId String @db.ObjectId
+  topic String 
+  testDate String
+  subjectName String
+  className String
+}
