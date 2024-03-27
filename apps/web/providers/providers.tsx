@@ -11,7 +11,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import UserProvider from './user-provider';
 
-const Providers = async ({ children }: { children: ReactNode }) => {
+const Providers = ({ children }: { children: ReactNode }) => {
 	const [queryClient] = useState(
 		() =>
 			new QueryClient({

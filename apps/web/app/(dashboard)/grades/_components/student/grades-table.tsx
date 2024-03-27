@@ -7,10 +7,10 @@ import {
 	TableHeader,
 	TableRow,
 } from 'ui/components/ui/table';
-import { Grade } from '@prisma/client';
 import { useQuery } from '@tanstack/react-query';
 import { showCurrentStudent } from '../../../../../api/actions/user/user.queries';
 import { getSubjects } from '../../../../../api/actions/subjects/subjects.queries';
+import { Grade } from 'database';
 
 export const GradesTableStudent = () => {
 	const { data: currentStudentData } = useQuery({

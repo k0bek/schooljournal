@@ -21,7 +21,8 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
 			dispatch(signInSuccess({}));
 		}
 	}, [user]);
-	return children;
+
+	return <>{children}</>;
 };
 
 export default UserProvider;

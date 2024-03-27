@@ -13,7 +13,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { requestJoinClass } from '../../../../../api/actions/class/class.queries';
 import { useEffect, useState } from 'react';
 import { cn } from 'ui/lib/utils';
-import { Student } from '@prisma/client';
+import { Student, Subject, Class } from '@prisma/client';
+
+interface ExtendedStudent extends Student {
+	requestedClasses: Class[];
+}
 
 export const AvailableClassesCard = ({
 	numberOfStudents,
@@ -29,13 +33,14 @@ export const AvailableClassesCard = ({
 	className: string;
 	formTeacherFirstName: string;
 	formTeacherLastName: string;
-	subjects: string[];
-	students: User[];
+	subjects: Subject[];
+	students: Student[];
 	classId: string;
 	currentStudent: Student;
 }) => {
 	const [isClassRequested, setIsClassRequested] = useState(false);
 	const queryClient = useQueryClient();
+	const currentStudentExtended = currentStudent as ExtendedStudent;
 
 	const { mutate: requestJoinClassMutate } = useMutation({
 		mutationFn: requestJoinClass,
@@ -44,7 +49,7 @@ export const AvailableClassesCard = ({
 
 	useEffect(() => {
 		setIsClassRequested(false);
-		if (currentStudent?.requestedClasses.find(classItem => classItem.id === classId)) {
+		if (currentStudentExtended.requestedClasses.find(classItem => classItem.id === classId)) {
 			setIsClassRequested(true);
 		}
 	}, [currentStudent]);
@@ -71,7 +76,7 @@ export const AvailableClassesCard = ({
 								<TooltipContent>
 									<ul>
 										Class subjects:
-										{subjects?.map(subject => (
+										{subjects?.map((subject: Subject) => (
 											<li key={subject?.subjectName}>- {subject?.subjectName}</li>
 										))}
 									</ul>
