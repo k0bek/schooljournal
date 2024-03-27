@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { AvailableClassesCard } from './available-classes-card';
 import { getClasses } from '../../../../../api/actions/class/class.queries';
-import { Student } from 'database';
+import { Student } from '@prisma/client';
 
 interface AvailableClassesProps {
 	currentStudent: Student;
