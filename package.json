@@ -1,42 +1,47 @@
 {
-  "private": true,
-  "scripts": {
-    "build": "turbo run build",
-    "dev": "dotenv -- turbo run dev",
-    "lint": "turbo run lint",
-    "format": "prettier --write. \"**/*.{ts,tsx,md}\"",
-    "prepare": "husky install",
-    "lint:fix": "turbo lint --fix",
-    "prettier:fix": "turbo prettier --write ."
-  },
-  "devDependencies": {
-    "@babel/eslint-parser": "^7.23.3",
-    "@commitlint/cli": "^18.4.3",
-    "@commitlint/config-conventional": "^18.4.3",
-    "@turbo/gen": "^1.9.7",
-    "commitlint-plugin-workspace-scopes": "^1.1.0",
-    "dotenv-cli": "^7.3.0",
-    "eslint": "^7.32.0",
-    "eslint-config-custom": "*",
-    "husky": "^8.0.0",
-    "lint-staged": "^15.1.0",
-    "prettier": "^3.1.0",
-    "prettier-plugin-tailwindcss": "^0.5.7",
-    "turbo": "latest"
-  },
-  "name": "adalace",
-  "packageManager": "npm@9.5.1",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
-  "dependencies": {
-    "@knocklabs/node": "^0.5.0",
-    "@knocklabs/react-notification-feed": "^0.8.13",
-    "bson": "^6.3.0",
-    "bson-objectid": "^2.0.4",
-    "cmdk": "^0.2.0",
-    "dotenv": "^16.3.1",
-    "radix-ui": "^1.0.1"
-  }
+	"private": true,
+	"scripts": {
+		"build": "prisma generate && turbo run build",
+		"validate:schema": "prisma validate",
+		"dev": "dotenv -- turbo run dev",
+		"lint": "turbo run lint",
+		"format": "prettier --write. \"**/*.{ts,tsx,md}\"",
+		"prepare": "husky install",
+		"lint:fix": "turbo lint --fix",
+		"prettier:fix": "turbo prettier --write .",
+		"postinstall": "prisma generate",
+		"prisma:generate": "prisma generate"
+	},
+	"devDependencies": {
+		"@babel/eslint-parser": "^7.23.3",
+		"@commitlint/cli": "^18.4.3",
+		"@commitlint/config-conventional": "^18.4.3",
+		"@prisma/client": "^3.0.0",
+		"@turbo/gen": "^1.9.7",
+		"commitlint-plugin-workspace-scopes": "^1.1.0",
+		"dotenv-cli": "^7.4.1",
+		"eslint": "^7.32.0",
+		"eslint-config-custom": "*",
+		"husky": "^8.0.0",
+		"lint-staged": "^15.1.0",
+		"prettier": "^3.1.0",
+		"prettier-plugin-tailwindcss": "^0.5.7",
+		"prisma": "^3.0.0",
+		"turbo": "latest"
+	},
+	"name": "adalace",
+	"packageManager": "npm@9.5.1",
+	"workspaces": [
+		"apps/*",
+		"packages/*"
+	],
+	"dependencies": {
+		"@knocklabs/node": "^0.5.0",
+		"@knocklabs/react-notification-feed": "^0.8.13",
+		"bson": "^6.3.0",
+		"bson-objectid": "^2.0.4",
+		"cmdk": "^0.2.0",
+		"dotenv": "^16.3.1",
+		"radix-ui": "^1.0.1"
+	}
 }
