@@ -31,12 +31,6 @@ export const ClientPagination = ({ choosedClassId }: ClientPaginationProps) => {
 	const lastPostIndex = currentPage * itemsPerPage;
 	const firstPostIndex = lastPostIndex - itemsPerPage;
 
-	const today = new Date();
-	const day = today.getDate().toString();
-	const month = (today.getMonth() + 1).toString().padStart(2, '0');
-	const year = today.getFullYear();
-	const formattedDate = `${day}.${month}.${year}`;
-
 	for (let i = 1; i <= daysInMonth; i++) {
 		const currentDay = new Date(currentYear, currentMonth, i);
 		const dayOfWeek = currentDay.getDay();

@@ -15,12 +15,20 @@ import { showCurrentStudent } from '../../../api/actions/user/user.queries';
 export const NavbarMobile = () => {
 	const dispatch = useDispatch();
 	const { currentUser } = useSelector((state: RootState) => state.user);
-
 	const { data } = useQuery({
 		queryKey: ['currentStudent'],
 		queryFn: showCurrentStudent,
 	});
+
 	const currentStudent = data?.currentStudent;
+	const isStudentOrTeacher =
+		(currentStudent?.classId && currentUser?.type === 'student') || currentUser?.type === 'teacher';
+
+	const handleNavigationClick = (itemLink: string) => {
+		if (!isStudentOrTeacher) {
+			toast.error('First you have to join the class.');
+		}
+	};
 
 	return (
 		<nav className="flex justify-between p-5 lg:hidden">
@@ -34,7 +42,10 @@ export const NavbarMobile = () => {
 								</Avatar>
 							) : (
 								<Avatar className="h-12 w-12 cursor-pointer border-[1px] border-violet-400">
-									<AvatarImage src="https://github.com/shadcn.png" />
+									<AvatarImage
+										className="h-full w-full"
+										src="https://www.e-sentral.com/images/avatar.png"
+									/>
 								</Avatar>
 							)}
 							<div className="ml-2 flex flex-col justify-center">
@@ -69,13 +80,11 @@ export const NavbarMobile = () => {
 							className="flex w-full cursor-pointer flex-col justify-center dark:text-white"
 						>
 							<Link
-								onClick={() => {
-									if (!currentStudent?.classId) toast.error('First you have to join to the class.');
-								}}
+								onClick={() => handleNavigationClick(item.link)}
 								className={cn(
 									'flex flex-col items-center justify-center text-xl transition-all hover:text-violet-600',
 								)}
-								href={currentStudent?.classId ? item.link : '/'}
+								href={isStudentOrTeacher ? item.link : '/'}
 							>
 								<item.icon />
 							</Link>

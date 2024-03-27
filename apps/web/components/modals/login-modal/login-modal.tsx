@@ -27,7 +27,7 @@ import { signInSuccess } from '../../../redux/slices/userSlice';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { postLogin, postRegister } from '../../../api/actions/auth/auth.queries';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { formSchema } from './login-modal-form-schema';
 
 type ErrorType = { response: { data: { msg: string } } };

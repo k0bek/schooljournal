@@ -4,7 +4,6 @@ import { persistStore, persistReducer } from 'redux-persist';
 import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
 import userSlice from './slices/userSlice';
 import chatSlice from './slices/chatSlice';
-import notificationSlice from './slices/notificationSlice';
 import addGradeSlice from './slices/addGradeSlice';
 import addTestSlice from './slices/addTestSlice';
 import classIdSlice from './slices/classIdSlice';
@@ -13,7 +12,6 @@ const rootReducer = combineReducers({
 	modal: modalSlice,
 	user: userSlice,
 	chat: chatSlice,
-	notification: notificationSlice,
 	addGrade: addGradeSlice,
 	addTest: addTestSlice,
 	classId: classIdSlice,
@@ -38,7 +36,6 @@ const storage = typeof window !== 'undefined' ? createWebStorage('local') : crea
 const persistConfig = {
 	key: 'root',
 	storage,
-	blacklist: ['notification'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

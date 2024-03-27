@@ -5,7 +5,7 @@ import { RootState } from '../../../../redux/store';
 import { useQuery } from '@tanstack/react-query';
 import { showCurrentStudent } from '../../../../api/actions/user/user.queries';
 
-const Welcome = () => {
+export const WelcomeHeading = () => {
 	const { currentUser } = useSelector((state: RootState) => state.user);
 	const { data } = useQuery({
 		queryKey: ['currentStudent'],
@@ -13,8 +13,8 @@ const Welcome = () => {
 	});
 	const currentStudent = data?.currentStudent;
 	const messageType = {
-		studentNoClass: 'You are not assigned to any class.',
-		studentWithClass: 'Have a nice day!',
+		studentWithoutClass: 'You are not assigned to any class.',
+		greetings: 'Have a nice day!',
 	};
 	return (
 		<header>
@@ -22,12 +22,10 @@ const Welcome = () => {
 				Hello {currentUser?.firstName},
 				<span className="text-violet-500">
 					{currentUser.type === 'student' && !currentStudent?.class
-						? messageType.studentNoClass
-						: messageType.studentWithClass}
+						? messageType.studentWithoutClass
+						: messageType.greetings}
 				</span>
 			</p>
 		</header>
 	);
 };
-
-export default Welcome;

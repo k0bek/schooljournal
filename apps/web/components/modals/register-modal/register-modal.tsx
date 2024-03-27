@@ -27,7 +27,7 @@ import { onClose, onOpen } from '../../../redux/slices/modalSlice';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { postRegister } from '../../../api/actions/auth/auth.queries';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { formSchema } from './register-modal-form-schema';
 import { signInSuccess } from '../../../redux/slices/userSlice';
 

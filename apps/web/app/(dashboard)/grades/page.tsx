@@ -19,6 +19,7 @@ const GradesPage = () => {
 	const [currentStudentSubjects, setCurrentStudentSubjects] = useState([]);
 	const dispatch = useDispatch();
 	const { currentUser } = useSelector((state: RootState) => state.user);
+	const [classId, setClassId] = useState('');
 
 	const { data } = useQuery({
 		queryKey: ['classes'],
@@ -64,6 +65,7 @@ const GradesPage = () => {
 
 			dispatch(assignStudentGradeId({ subjectsWithNameAndId, studentId }));
 			setCurrentStudentSubjects(subjectsWithUpgradedGrades);
+			setClassId(currentClass?.id);
 		},
 		[currentClass],
 	);
@@ -97,7 +99,7 @@ const GradesPage = () => {
 				</div>
 			)}
 			{currentUser?.type === 'teacher' && currentStudentSubjects.length !== 0 && (
-				<GradesTableTeacher currentClassId={currentClass?.id} />
+				<GradesTableTeacher currentClassId={classId} />
 			)}
 			{currentUser?.type === 'student' && <GradesTableStudent />}
 		</div>

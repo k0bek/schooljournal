@@ -4,7 +4,7 @@ import { Dialog, DialogContent } from 'ui/components/ui/dialog';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store';
 import { onClose } from '../../../redux/slices/modalSlice';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Lottie from 'lottie-react';
 import animationData from './../../../public/animations/email-sent.json';
 

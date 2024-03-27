@@ -47,7 +47,10 @@ export const NavbarDesktop = () => {
 			<div className="flex flex-col items-center">
 				<div className="flex flex-col items-center" onClick={handleUpdateUserModal}>
 					<Avatar className="h-20 w-20 cursor-pointer border-[1px] border-violet-400">
-						<AvatarImage src={currentUser?.imageUrl || 'https://github.com/shadcn.png'} />
+						<AvatarImage
+							className="h-full w-full"
+							src={currentUser?.imageUrl || 'https://www.e-sentral.com/images/avatar.png'}
+						/>
 					</Avatar>
 					<div className="ml-2 mt-1 flex flex-col justify-center text-center">
 						<p className="cursor-pointer text-lg font-bold">

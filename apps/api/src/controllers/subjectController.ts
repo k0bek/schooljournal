@@ -5,6 +5,8 @@ import { StatusCodes } from 'http-status-codes';
 export const getSubjects = async (req: Request, res: Response) => {
 	const { currentClassId } = req.query;
 
+	console.log('xdd');
+
 	const subjects = await db.subject.findMany({
 		where: {
 			classId: currentClassId as string,

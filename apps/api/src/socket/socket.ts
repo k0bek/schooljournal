@@ -34,16 +34,6 @@ export const socket = (server: http.Server | https.Server) => {
 			socket.broadcast.emit('typingResponse', data);
 		});
 
-		//notifications
-
-		socket.on('initalNotification', data => {
-			io.emit('initialNotificationResponse', data);
-		});
-
-		socket.on('chatNotification', data => {
-			io.emit('chatNotificationResponse', data);
-		});
-
 		socket.on('disconnect', () => {
 			console.log('🔥: A user disconnected');
 			delete users[socket.id];

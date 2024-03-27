@@ -17,12 +17,13 @@ export const GradesTableStudent = () => {
 		queryKey: ['currentStudent'],
 		queryFn: showCurrentStudent,
 	});
-	const currentClassId = currentStudentData?.classId;
+	const currentStudent = currentStudentData?.currentStudent;
+	const currentClassId = currentStudent?.classId;
 
 	const { data } = useQuery({
 		queryKey: ['subjects', currentClassId],
 		queryFn: async () => {
-			const data = await getSubjects({ currentClassId: currentClassId });
+			const data = await getSubjects({ currentClassId });
 			return data;
 		},
 	});

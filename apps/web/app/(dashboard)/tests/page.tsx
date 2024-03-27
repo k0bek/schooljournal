@@ -25,7 +25,7 @@ const TestsPage = () => {
 	}, [currentStudent]);
 
 	return (
-		<div className="w-full flex-col px-5 pb-20 lg:ml-64 lg:flex lg:gap-12 lg:py-5">
+		<div className="flex w-full flex-col gap-12 px-5 pb-20 lg:ml-64 lg:py-5">
 			<p className="text-3xl font-semibold lg:text-5xl">
 				Your{' '}
 				<span className="text-violet-500">

@@ -31,8 +31,7 @@ import { formSchema } from './first-name-last-name-schema';
 import React from 'react';
 import { signInSuccess } from '../../../redux/slices/userSlice';
 import { updateUser } from '../../../api/actions/user/user.queries';
-import { createNotification } from '../../../api/actions/notification/notification.queries';
-import { assignNotification } from '../../../redux/slices/notificationSlice';
+
 import { socket } from '../../../providers/socket';
 
 type ErrorType = { response: { data: { msg: string } } };
@@ -44,10 +43,6 @@ export const FirstNameLastNameModal = () => {
 	const dispatch = useDispatch();
 	const isModalOpen = isOpen && type === 'firstNameLastName';
 	const [formError, setFormError] = useState<ErrorType>({ response: { data: { msg: '' } } });
-	const { mutate: notificationMutate, data: notificationData } = useMutation({
-		mutationFn: createNotification,
-		mutationKey: ['notification'],
-	});
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -90,31 +85,10 @@ export const FirstNameLastNameModal = () => {
 	}) => {
 		try {
 			mutate({ firstName, lastName, email: currentUser?.email, type });
-			socket.emit('initalNotification', {
-				text: 'We are so happy that you joined us!',
-				memberOneId: currentUser.id,
-			});
-			notificationMutate({
-				text: 'We are so happy that you joined us!',
-				memberOneId: currentUser.id,
-				url: '/messages',
-			});
 		} catch (error) {
 			console.log(error);
 		}
 	};
-
-	useEffect(() => {
-		const handleReceivedNotification = data => {
-			dispatch(assignNotification(data));
-		};
-
-		socket.on('initialNotificationResponse', handleReceivedNotification);
-
-		return () => {
-			socket.off('initialNotificationResponse', handleReceivedNotification);
-		};
-	}, [socket]);
 
 	return (
 		<AlertDialog open={isModalOpen} onOpenChange={handleClose}>

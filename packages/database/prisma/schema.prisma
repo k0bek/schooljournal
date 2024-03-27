@@ -34,8 +34,6 @@ model User {
   student Student?
   messagesInitiated Message[] @relation("MemberOne")
   messagesReceived Message[] @relation("MemberTwo")
-  notificationsInitiated Notification[] @relation("MemberOne")
-  notificationssReceived Notification[] @relation("MemberTwo")
   initialized Boolean @default(false)
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
@@ -94,19 +92,6 @@ model Message{
   memberTwoId String? @db.ObjectId
   memberTwo User? @relation("MemberTwo", fields: [memberTwoId], references: [id])
   createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
-}
-
-model Notification{
-  id               String     @id @default(auto()) @map("_id") @db.ObjectId
-  text String
-  memberOneId String @db.ObjectId
-  memberOne User @relation("MemberOne", fields: [memberOneId], references: [id])
-  memberTwoId String @db.ObjectId
-  memberTwo User @relation("MemberTwo", fields: [memberTwoId], references: [id])
-  url String
-  readed Boolean @default(false)
- createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
 }
 

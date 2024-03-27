@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store';
 import { onClose, onOpen } from '../../../redux/slices/modalSlice';
 import { useEffect } from 'react';
-import Welcome from './_components/welcome';
+import { WelcomeHeading } from './_components/welcome-heading';
 import { AvailableClasses } from './_components/student/available-classes';
 import { CreateYourClass } from './_components/teacher/create-your-class';
 import { ClassRequests } from './_components/teacher/class-requests';
@@ -35,13 +35,13 @@ const HomePage = () => {
 		<main className="w-full px-5 py-1 lg:ml-64 lg:py-5">
 			{currentUser?.type === 'student' && (
 				<>
-					<Welcome />
+					<WelcomeHeading />
 					{!currentStudent?.classId && <AvailableClasses currentStudent={currentStudent} />}
 				</>
 			)}
 			{currentUser?.type === 'teacher' && (
 				<>
-					<Welcome />
+					<WelcomeHeading />
 					<div className="flex flex-col">
 						<CreateYourClass />
 						<ClassRequests />

@@ -16,8 +16,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import Lottie from 'lottie-react';
 import animationData from './../../../../../public/animations/loading.json';
 import { Avatar, AvatarImage } from 'ui/components/ui/avatar';
-import { createNotification } from '../../../../../api/actions/notification/notification.queries';
-import { assignChatNotification } from '../../../../../redux/slices/notificationSlice';
 import { socket } from '../../../../../providers/socket';
 
 export const Chat = ({ memberTwo }) => {
@@ -27,10 +25,6 @@ export const Chat = ({ memberTwo }) => {
 	const { mutate } = useMutation({
 		mutationFn: createMessage,
 		mutationKey: ['messages'],
-	});
-	const { mutate: notificationMutate } = useMutation({
-		mutationFn: createNotification,
-		mutationKey: ['notification'],
 	});
 
 	const [messages, setMessages] = useState([]);
@@ -89,24 +83,10 @@ export const Chat = ({ memberTwo }) => {
 			setMessages(prev => [...prev, data]);
 		};
 
-		const handleReceivedNotificationMessage = data => {
-			if (currentUser.id === data.memberTwoId) {
-				dispatch(assignChatNotification(data));
-				notificationMutate({
-					text: 'Someone has already texted you.',
-					memberTwoId: data.memberTwoId,
-					memberOneId: currentUser.id,
-					url: '/messages',
-				});
-			}
-		};
-
 		socket.on('messageResponse', handleReceivedMessage);
-		socket.on('chatNotificationResponse', handleReceivedNotificationMessage);
 
 		return () => {
 			socket.off('messageResponse', handleReceivedMessage);
-			socket.off('hatNotificationResponse', handleReceivedNotificationMessage);
 		};
 	}, [socket]);
 
