@@ -28,7 +28,6 @@ const Providers = ({ children }: { children: ReactNode }) => {
 	return (
 		<Provider store={store}>
 			<QueryClientProvider client={queryClient}>
-				<ReactQueryDevtools initialIsOpen={false} />
 				<PersistGate loading={null} persistor={persistor}>
 					<UserProvider>
 						<ThemeProvider

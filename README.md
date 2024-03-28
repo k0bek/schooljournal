@@ -1,90 +1,191 @@
-# Turborepo Next Express ShadcnUI starter
+<a name="readme-top"></a>
 
-This is a starter template for Turborepo with nextjs, express and shadcnui.
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://github.com/k0bek/schooljournal">
+    <img src="/images/logo.png" alt="School Journal image" width="300" height="300">
+  </a>
 
-## Using this example
+<h3 align="center">School Journal</h3>
+  <p align="center">
+   The best school journal for your needs!
+    <br />
+    <a href="https://github.com/k0bek/schooljournal"><strong>Explore the docs »</strong></a>
+    <br />
+</div>
 
-Run the following command:
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+    </li>
+    <li>
+     <!-- <a href="#getting-started">Getting Started</a> -->
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ol>
+</details>
 
-```sh
-git clone https://github.com/htcni/turborepo-next-express-shadcnui-starter.git
-```
+<!-- ABOUT THE PROJECT -->
 
-## What's inside?
+## About The Project
 
-This Turborepo includes the following packages/apps:
+![Starting screen image](/images/screen1.png)
 
-### Apps and Packages
+The student-teacher app facilitates grade management, test tracking, class enrollment, and communication with two-factor authentication. and chat.
 
-- `admin`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `api`: a [Express.js](https://expressjs.com/) app
-- `ui`: a [shadcn/ui](https://ui.shadcn.com/) components shared by both `web` and `admin` applications
-- `eslint-config-custom`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `tsconfig`: `tsconfig.json`s used throughout the monorepo
+See <a href="#usage"><b>Usage</b></a> for more information about the application
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## Adding shadcn component
+### Built With
 
-Run the following command:
+- Next.js
+- Express.js
+- Socket.IO
+- Redux Toolkit
+- Tailwind CSS
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-```sh
-npm run ui:add accordion --workspace=ui
-```
+<!-- GETTING STARTED -->
 
-### Utilities
+This is an example of how you may give instructions on setting up your project locally.
+To get a local copy up and running follow these simple example steps.
 
-This Turborepo has some additional tools already setup for you:
+## Prerequisites
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+This is an example of how to list things you need to use the software and how to install them.
 
-### Build
+- npm
+  ```sh
+  npm install npm@latest -g
+  ```
 
-To build all apps and packages, run the following command:
+### Installation
 
-```
-cd turborepo-next-express-shadcnui-starter
-npm run build
-```
+1. Clone the repo
+   ```sh
+   git@github.com:k0bek/schooljournal.git
+   ```
+1. Enter the app
+   ```sh
+   cd schooljournal
+   ```
+1. Install NPM packages
+   ```sh
+   npm install
+   ```
 
-### Develop
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-To develop all apps and packages, run the following command:
+<!-- USAGE EXAMPLES -->
 
-```
-cd turborepo-next-express-shadcnui-starter
-npm run dev
-```
+## Usage
 
-### Remote Caching
+To unlock the main part of the application - the dashboard, you need to create your own account or log in to any of the following:
 
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+| E-mail              | Password  | Account Type |
+| ------------------- | --------- | ------------ |
+| student@example.com | Student1! | Student      |
+| teacher@example.com | Teacher1! | Teacher      |
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
+### Creating Account
 
-```
-cd turborepo-next-express-shadcnui-starter
-npx turbo login
-```
+To enter the app, log in, sign up, or create an account using Google.
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+If you register using an email and password, a confirmation link will be sent to your email to verify your account creation.
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+![Verify screen](/images/screen2.png)
 
-```
-npx turbo link
-```
+![Verify completed](/images/screen3.png)
 
-## Useful Links
+After successful login, you will be redirected to the homepage where you will need to provide your first and last name, and also specify whether you are a teacher or a student.
 
-Learn more about the power of Turborepo:
+### Dashboard
 
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+After successfully logging in, you will see a dashboard with a panel on the left side.
+Depending on whether you are a student or a teacher, you will see different views.
+
+![Dashboard screen image](/images/screen4.png)
+
+![Dashboard screen image](/images/screen5.png)
+
+As a teacher, you can create a class and accept students.
+![Starting screen image](/images/screen6.png)
+As a student, you can request to class.
+![Request screen image](/images/screen7.png)
+
+### Grades
+
+As a teacher, you can add grades for students, the subject grade, and the topic of the grade. As a student, you can see your grades along with the weighted average.
+
+![Grades screen image](/images/screen8.png)
+
+![Grades screen image](/images/screen9.png)
+
+![Grades screen image](/images/screen10.png)
+
+### Messages
+
+In the messaging section, you can select a user you want to chat with (teacher or student). You can send messages in real-time, see if the user is active, and know if they are writing to you at the moment.
+
+![Messages screen image](/images/screen11.png)
+
+### Tests
+
+In the tests section, as a teacher, you can add grades to the class by assigning them to the appropriate day along with the topic of the test and the subject.
+
+![Tests screen image](/images/screen12.png)
+
+![Tests screen image](/images/screen13.png)
+
+### Update profile
+
+After clicking on "update profile" (as well as clicking on the avatar at the top of the screen), you can edit your first and last name as well as your photo.
+
+![Tests screen image](/images/screen14.png)
+
+## Contributing
+
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
+Don't forget to give the project a star! Thanks again!
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- LICENSE -->
+
+<!-- ## License
+
+Distributed under the MIT License. See `LICENSE.txt` for more information.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p> -->
+
+<!-- CONTACT -->
+
+## Contact
+
+Your Name - kubakiebala@gmail.com
+
+Project Link: [https://github.com/k0bek/schooljournal](https://github.com/k0bek/schooljournal)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>

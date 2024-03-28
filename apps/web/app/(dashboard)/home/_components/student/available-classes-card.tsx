@@ -49,7 +49,7 @@ export const AvailableClassesCard = ({
 
 	useEffect(() => {
 		setIsClassRequested(false);
-		if (currentStudentExtended.requestedClasses.find(classItem => classItem.id === classId)) {
+		if (currentStudentExtended?.requestedClasses.find(classItem => classItem.id === classId)) {
 			setIsClassRequested(true);
 		}
 	}, [currentStudent]);

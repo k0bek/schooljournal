@@ -26,13 +26,11 @@ import { RootState } from '../../../redux/store';
 import { onClose } from '../../../redux/slices/modalSlice';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { formSchema } from './first-name-last-name-schema';
 import React from 'react';
 import { signInSuccess } from '../../../redux/slices/userSlice';
 import { updateUser } from '../../../api/actions/user/user.queries';
-
-import { socket } from '../../../providers/socket';
 
 type ErrorType = { response: { data: { msg: string } } };
 
@@ -84,7 +82,17 @@ export const FirstNameLastNameModal = () => {
 		type: 'student' | 'teacher';
 	}) => {
 		try {
-			mutate({ firstName, lastName, email: currentUser?.email, type });
+			if (currentUser.type === 'student') {
+				mutate({ firstName, lastName, email: currentUser?.email, type });
+			} else {
+				mutate({ firstName, lastName, email: currentUser?.email, type: currentUser.type });
+			}
+
+			console.log(type);
+
+			if (type) {
+				mutate({ firstName, lastName, email: currentUser?.email, type });
+			}
 		} catch (error) {
 			console.log(error);
 		}

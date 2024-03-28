@@ -19,7 +19,7 @@ const TestsPage = () => {
 	const [choosedClassId, setChoosedClassId] = useState(null);
 
 	useEffect(() => {
-		if (currentUser.type == 'student') {
+		if (currentUser?.type == 'student') {
 			setChoosedClassId(currentStudent?.classId);
 		}
 	}, [currentStudent]);
@@ -32,8 +32,8 @@ const TestsPage = () => {
 					{currentUser?.type === 'student' ? 'tests' : 'students tests'}
 				</span>
 			</p>
-			{currentUser.type === 'teacher' && <SelectClass setChoosedClassId={setChoosedClassId} />}
-			{(currentUser.type === 'student' || choosedClassId) && (
+			{currentUser?.type === 'teacher' && <SelectClass setChoosedClassId={setChoosedClassId} />}
+			{(currentUser?.type === 'student' || choosedClassId) && (
 				<ClientPagination choosedClassId={choosedClassId} />
 			)}
 		</div>
