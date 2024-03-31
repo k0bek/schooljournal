@@ -12,6 +12,8 @@
 	"main": "./index.ts",
 	"types": "./index.ts",
 	"scripts": {
+		"prebuild": "prisma generate",
+		"build": "prisma generate",
 		"db:generate": "prisma generate",
 		"db:push": "prisma db push --skip-generate",
 		"validate:schema": "prisma validate"

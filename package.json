@@ -1,13 +1,15 @@
 {
 	"private": true,
 	"scripts": {
-		"build": "prisma generate && turbo run build",
+		"build": "cd packages/database && prisma generate && cd ../.. && turbo run build",
 		"dev": "dotenv -- turbo run dev",
 		"lint": "turbo run lint",
-		"format": "prettier --write. \"**/*.{ts,tsx,md}\"",
+		"format": "prettier --write \"**/*.{ts,tsx,md}\"",
 		"prepare": "husky install",
-		"lint:fix": "turbo lint --fix",
-		"prettier:fix": "turbo prettier --write ."
+		"lint:fix": "turbo run lint --fix",
+		"prettier:fix": "turbo run prettier --write .",
+		"db:generate": "node runWithEnv.js prisma generate --schema=packages/database/schema.prisma",
+		"db:push": "node runWithEnv.js prisma db push --schema=packages/database/schema.prisma"
 	},
 	"devDependencies": {
 		"@babel/eslint-parser": "^7.23.3",

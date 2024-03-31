@@ -1,60 +1,53 @@
-'use client';
-
-import { useState } from 'react';
-import { PaginationSection } from './pagination-section';
-import { Button } from 'ui';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useQuery } from '@tanstack/react-query';
+import { Button } from 'ui';
 import { onOpen } from '../../../../redux/slices/modalSlice';
 import { assignTestDate } from '../../../../redux/slices/addTestSlice';
-import { CreatedTest } from './createdTest';
-import { useQuery } from '@tanstack/react-query';
 import { getTests } from '../../../../api/actions/tests/tests.queries';
 import { RootState } from '../../../../redux/store';
+import { CreatedTest } from './createdTest';
 
 interface ClientPaginationProps {
 	choosedClassId: string;
 }
 
 export const ClientPagination = ({ choosedClassId }: ClientPaginationProps) => {
-	const { currentUser } = useSelector((state: RootState) => state.user);
-
 	const dispatch = useDispatch();
+	const { currentUser } = useSelector((state: RootState) => state.user);
 	const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-	const days = [];
-	const currentDate = new Date();
-	const currentMonth = currentDate.getMonth();
-	const currentYear = currentDate.getFullYear();
-	const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-	const [currentPage, setCurrentPage] = useState(1);
-	const [itemsPerPage, setItemsPerPage] = useState(5);
-	const lastPostIndex = currentPage * itemsPerPage;
-	const firstPostIndex = lastPostIndex - itemsPerPage;
+	const [currentWeek, setCurrentWeek] = useState(new Date());
 
-	for (let i = 1; i <= daysInMonth; i++) {
-		const currentDay = new Date(currentYear, currentMonth, i);
-		const dayOfWeek = currentDay.getDay();
-
-		if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-			days.push({
-				currentDate: currentDay.toLocaleDateString(),
-				currentDay: weekdays[dayOfWeek],
-			});
+	const calculateCurrentWeekDays = date => {
+		const first = date.getDate() - date.getDay() + 1; // Pierwszy dzień tygodnia (poniedziałek)
+		let days = [];
+		for (let i = 0; i < 7; i++) {
+			let day = new Date(date.getFullYear(), date.getMonth(), first + i);
+			if (day.getDay() !== 0 && day.getDay() !== 6) {
+				// Wykluczenie soboty (6) i niedzieli (0)
+				days.push({
+					currentDate: day.toLocaleDateString(),
+					currentDay: weekdays[day.getDay()],
+				});
+			}
 		}
-	}
+		return days;
+	};
 
-	const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
-	const firstDayOfWeek = firstDayOfMonth.getDay();
-	const daysToAdd = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
-	for (let i = 0; i < daysToAdd; i++) {
-		const prevMonthDay = new Date(currentYear, currentMonth, -i);
-		days.unshift({
-			currentDate: prevMonthDay.toLocaleDateString(),
-			currentDay: weekdays[prevMonthDay.getDay()],
-		});
-	}
+	const currentItems = calculateCurrentWeekDays(currentWeek);
 
-	const currentItems = days.slice(firstPostIndex, lastPostIndex);
+	const goToNextWeek = () => {
+		setCurrentWeek(
+			new Date(currentWeek.getFullYear(), currentWeek.getMonth(), currentWeek.getDate() + 7),
+		);
+	};
+
+	const goToPreviousWeek = () => {
+		setCurrentWeek(
+			new Date(currentWeek.getFullYear(), currentWeek.getMonth(), currentWeek.getDate() - 7),
+		);
+	};
 
 	const { data } = useQuery({
 		queryKey: ['tests'],
@@ -63,9 +56,9 @@ export const ClientPagination = ({ choosedClassId }: ClientPaginationProps) => {
 	const tests = data?.tests;
 
 	return (
-		<div className="grid grid-cols-1 grid-rows-7 gap-4">
-			{currentItems.map(item => {
-				return (
+		<div>
+			<div className="grid grid-cols-1 grid-rows-7 gap-4">
+				{currentItems.map(item => (
 					<div
 						key={item.currentDate}
 						className="flex items-center justify-between rounded-md bg-violet-200 px-3 py-5"
@@ -83,6 +76,7 @@ export const ClientPagination = ({ choosedClassId }: ClientPaginationProps) => {
 										/>
 									);
 								}
+								return null;
 							})}
 						</div>
 						{currentUser?.type === 'teacher' && (
@@ -96,14 +90,12 @@ export const ClientPagination = ({ choosedClassId }: ClientPaginationProps) => {
 							</Button>
 						)}
 					</div>
-				);
-			})}
-			<PaginationSection
-				totalItems={days.length}
-				itemsPerPage={itemsPerPage}
-				currentPage={currentPage}
-				setCurrentPage={setCurrentPage}
-			/>
+				))}
+				<div className="my-4 flex justify-between">
+					<Button onClick={goToPreviousWeek}>Previous Week</Button>
+					<Button onClick={goToNextWeek}>Next Week</Button>
+				</div>
+			</div>
 		</div>
 	);
 };
