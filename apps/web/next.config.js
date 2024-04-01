@@ -5,7 +5,7 @@ module.exports = {
 		return [
 			{
 				source: '/api/v1/:path*',
-				destination: 'http://localhost:5001/api/v1/:path*', // Proxy to Backend
+				destination: 'https://schooljournal-demo.onrender.com/api/v1/:path*', // Proxy to Backend
 			},
 		];
 	},
